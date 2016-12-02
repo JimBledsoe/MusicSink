@@ -1,0 +1,24 @@
+﻿<Window x:Name="___No_Name_" x:Class="MusicSink.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MusicSink"
+        mc:Ignorable="d"
+        Title="MusicSink - Sync removable music media from a master repository" Height="400" Width="700">
+    <Grid Margin="0,0,4.2,0.4">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="0*"/>
+            <ColumnDefinition Width="0*"/>
+        </Grid.ColumnDefinitions>
+        <Label x:Name="remoteMasterlabel" Content="Remote Master Path" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="29" Width="137"/>
+        <TextBox x:Name="remoteMasterPath" HorizontalAlignment="Left" Height="23" Margin="152,14,0,0" TextWrapping="Wrap" Text="...remote path where your music library" VerticalAlignment="Top" Width="431"/>
+        <Button x:Name="remoteMasterBrowseButton" Content="Browse" HorizontalAlignment="Left" Margin="604,14,0,0" VerticalAlignment="Top" Width="75" Click="remoteMasterBrowseButton_Click" Height="19"/>
+        <Label x:Name="localMasterlabel" Content="Local Master Path" HorizontalAlignment="Left" Margin="10,48,0,0" VerticalAlignment="Top" Height="29" Width="137"/>
+        <TextBox x:Name="localMasterPath" HorizontalAlignment="Left" Height="23" Margin="152,53,0,0" TextWrapping="Wrap" Text="...local path where your music library" VerticalAlignment="Top" Width="431"/>
+        <Button x:Name="localMasterBrowseButton" Content="Browse" HorizontalAlignment="Left" Margin="604,52,0,0" VerticalAlignment="Top" Width="75" Click="localMasterBrowseButton_Click" Height="19"/>
+        <Button x:Name="scanMasterRemoteButton" Content="Scan the master repository for new music" HorizontalAlignment="Left" Margin="195,81,0,0" VerticalAlignment="Top" Width="298" Height="19" Click="scanMasterRemoteButton_Click"/>
+
+    </Grid>
+</Window>
