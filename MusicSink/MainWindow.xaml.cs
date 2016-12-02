@@ -22,6 +22,10 @@ namespace MusicSink
     /// </summary>
     public partial class MainWindow : Window
     {
+        //protected List<DriveInfo> driveList;        // decide which to use later
+        protected List<string> removableList;       // decide which to use later
+        //protected IEnumerable<string> removableDrives;       // decide which to use later
+
         public MainWindow()
         {
             InitializeComponent();
@@ -29,7 +33,15 @@ namespace MusicSink
             // Set sane defaults
             remoteMasterPath.Text = null;
             localMasterPath.Text = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic);
-            var driveList = DriveInfo.GetDrives().Where(d => d.DriveType == DriveType.Removable);
+            //driveList = DriveInfo.GetDrives().Where(d => d.DriveType == DriveType.Removable).ToList();
+            removableList = DriveInfo.GetDrives().Where(d => d.DriveType == DriveType.Removable).Select(s => s.ToString()).ToList();
+            //removableDrives = DriveInfo.GetDrives().Where(d => d.DriveType == DriveType.Removable).Select(s => s.ToString());
+            if (removableList.Count() == 0) 
+            {
+                removableList.Add("<insert removable media and select it>");
+            }
+            removableDriveCombo.ItemsSource = removableList;
+            removableDriveCombo.SelectedIndex = 0;
 
             // Set last used settings
         }
@@ -56,7 +68,7 @@ namespace MusicSink
             }
         }
 
-        private void removableDrives_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void removableDriveCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
         }
