@@ -4,9 +4,9 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
-
 namespace MusicSink
 {
+
     class MusicFolder
     {
         public string folderName;
@@ -33,7 +33,7 @@ namespace MusicSink
             fileName = fi.FullName;
             timeStamp = fi.LastWriteTime;
             size = fi.Length;
-            md5 = calculateFileMD5(fileName);
+            md5 = null; // calculateFileMD5(fileName);
         }
 
         // Calculate the MD5 checksum of a file

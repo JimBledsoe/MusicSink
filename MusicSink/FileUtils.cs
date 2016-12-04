@@ -4,6 +4,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 
+
 namespace MusicSink
 {
     class FileUtils
@@ -47,14 +48,20 @@ namespace MusicSink
 
             try
             {
-                foreach (string d in Directory.GetDirectories(sDir))
+                // Get all the files in this folder
+                foreach (string f in Directory.GetFiles(sDir))
                 {
-                    foreach (string f in Directory.GetFiles(d))
+                    // skip the manifest file
+                    if (!f.Contains(Constants.ManifestFilename))
                     {
                         MusicFile mf = new MusicFile(new System.IO.FileInfo(f));
                         musicFiles.Add(mf);
                         Console.WriteLine(f);
                     }
+                }
+                // Recurse into the subdirs in this folder
+                foreach (string d in Directory.GetDirectories(sDir))
+                {
                     EnumerateFilesInPath(d);
                 }
             }

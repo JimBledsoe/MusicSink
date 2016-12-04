@@ -8,6 +8,12 @@ using System.Windows.Input;
 using UsbDriveEvents;
 
 
+static class Constants
+{
+    public const string ManifestFilename = "MusicSink_manifest.json";
+}
+
+
 namespace MusicSink
 {
     /// <summary>
@@ -144,9 +150,27 @@ namespace MusicSink
         // Begin the scan process widgets
         private void scanMasterRemoteButton_Click(object sender, RoutedEventArgs e)
         {
-            MusicFolder masterMusic;
+            MusicFolder masterMusic = FileUtils.EnumerateMusicFolder(localMasterPath.Text);
 
-            masterMusic = FileUtils.EnumerateMusicFolder(localMasterPath.Text);
+            FileInfo masterManifest = new FileInfo(Path.GetFullPath(localMasterPath.Text) + "\\" + Constants.ManifestFilename);
+            if (!masterManifest.Exists)
+            {
+                string json = Newtonsoft.Json.JsonConvert.SerializeObject(masterMusic);
+                try
+                {
+                    File.WriteAllText(masterManifest.FullName, json);
+                }
+                catch
+                {
+                    MessageBoxResult result = MessageBox.Show(
+                        "Could not write the manifest file to " + masterManifest.FullName,
+                        "Cannot create music manifest",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Question);
+
+                }
+            }
+                
         }
 
     }
