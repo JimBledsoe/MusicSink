@@ -57,9 +57,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="MusicFile.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="UsbDriveDetector.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="FileUtils.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

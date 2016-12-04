@@ -1,4 +1,4 @@
-﻿<Window x:Name="___No_Name_" x:Class="MusicSink.MainWindow"
+﻿<Window x:Name="MusicSinkWindow" x:Class="MusicSink.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -14,11 +14,11 @@
         </Grid.ColumnDefinitions>
 
         <Label x:Name="remoteMasterLabel" Content="Remote Master Path" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="29" Width="137"/>
-        <TextBox x:Name="remoteMasterPath" HorizontalAlignment="Left" Height="23" Margin="152,14,0,0" TextWrapping="Wrap" Loaded="remoteMasterBrowsePath_Loaded" Text="...remote path where your music library" VerticalAlignment="Top" Width="431"/>
+        <TextBox x:Name="remoteMasterPath" HorizontalAlignment="Left" Height="23" Margin="152,14,0,0" TextWrapping="Wrap" Loaded="remoteMasterPath_Loaded" Text="{Binding Source={StaticResource Settings}, Path=Default.RemoteMasterPath}" LostFocus="remoteMasterPath_Changed" KeyDown="remoteMasterPath_KeyDown" VerticalAlignment="Top" Width="431"/>
         <Button x:Name="remoteMasterBrowseButton" Content="Browse" HorizontalAlignment="Left" Margin="604,16,0,0" VerticalAlignment="Top" Width="75" Click="remoteMasterBrowseButton_Click" Height="19"/>
 
         <Label x:Name="localMasterLabel" Content="Local Master Path" HorizontalAlignment="Left" Margin="10,39,0,0" VerticalAlignment="Top" Height="29" Width="137"/>
-        <TextBox x:Name="localMasterPath" HorizontalAlignment="Left" Height="23" Margin="152,42,0,0" TextWrapping="Wrap" Loaded="localMasterBrowsePath_Loaded" Text="...local path where your music library" VerticalAlignment="Top" Width="431"/>
+        <TextBox x:Name="localMasterPath" HorizontalAlignment="Left" Height="23" Margin="152,42,0,0" TextWrapping="Wrap" Loaded="localMasterPath_Loaded" Text="{Binding Source={StaticResource Settings}, Path=Default.LocalMasterPath}" LostFocus="localMasterPath_Changed" KeyDown="localMasterPath_KeyDown" VerticalAlignment="Top" Width="431"/>
         <Button x:Name="localMasterBrowseButton" Content="Browse" HorizontalAlignment="Left" Margin="605,43,0,0" VerticalAlignment="Top" Width="75" Click="localMasterBrowseButton_Click" Height="19"/>
 
         <Label x:Name="removableLabel" Content="Removable Media Path" HorizontalAlignment="Left" Margin="10,68,0,0" VerticalAlignment="Top" Height="29" Width="137"/>

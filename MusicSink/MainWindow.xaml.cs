@@ -2,20 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Management;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Interop;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Forms;
 using UsbDriveEvents;
 
 
@@ -41,9 +30,10 @@ namespace MusicSink
             // Set last used settings
         }
 
-        private void remoteMasterBrowsePath_Loaded(object sender, RoutedEventArgs e)
+        // Remote Master Widgets
+        private void remoteMasterPath_Loaded(object sender, RoutedEventArgs e)
         {
-            remoteMasterPath.Text = null;
+            // empty is appropriate for the remote master
         }
 
         private void remoteMasterBrowseButton_Click(object sender, RoutedEventArgs e)
@@ -57,9 +47,27 @@ namespace MusicSink
             }
         }
 
-        private void localMasterBrowsePath_Loaded(object sender, RoutedEventArgs e)
+        private void remoteMasterPath_Changed(object sender, RoutedEventArgs e)
         {
-            localMasterPath.Text = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic);
+            FileUtils.validatePathTextbox(remoteMasterPath, Properties.Settings.Default["remoteMasterPath"].ToString());
+        }
+
+        private void remoteMasterPath_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                ((TextBox)sender).RaiseEvent(new RoutedEventArgs(TextBox.LostFocusEvent));
+            }
+        }
+
+        // Local Master Widgets
+        private void localMasterPath_Loaded(object sender, RoutedEventArgs e)
+        {
+            // Use the MyMusic folder by default if no local master is defined yet
+            if (localMasterPath.Text.Length == 0)
+            {
+                localMasterPath.Text = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic);
+            }
         }
 
         private void localMasterBrowseButton_Click(object sender, RoutedEventArgs e)
@@ -73,6 +81,20 @@ namespace MusicSink
             }
         }
 
+        private void localMasterPath_Changed(object sender, RoutedEventArgs e)
+        {
+            FileUtils.validatePathTextbox(localMasterPath, Properties.Settings.Default["localMasterPath"].ToString());
+        }
+
+        private void localMasterPath_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                ((TextBox)sender).RaiseEvent(new RoutedEventArgs(TextBox.LostFocusEvent));
+            }
+        }
+
+        // Removable Media Widgets
         private void enumerateRemovableDriveCombo()
         {
             removableList = DriveInfo.GetDrives().Where(d => d.DriveType == DriveType.Removable).Select(s => s.ToString()).ToList();
@@ -119,11 +141,13 @@ namespace MusicSink
 
         }
 
+        // Begin the scan process widgets
         private void scanMasterRemoteButton_Click(object sender, RoutedEventArgs e)
         {
+            MusicFolder masterMusic;
 
+            masterMusic = FileUtils.EnumerateMusicFolder(localMasterPath.Text);
         }
-
 
     }
 }

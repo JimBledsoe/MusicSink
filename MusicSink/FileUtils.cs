@@ -1,0 +1,73 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Windows;
+using System.Windows.Controls;
+
+namespace MusicSink
+{
+    class FileUtils
+    {
+        // Validate the path entered into a path textbox in the UI
+        static public void validatePathTextbox(TextBox tb, string revertTo)
+        {
+            if (tb.Text.Length > 0)
+            {
+                DirectoryInfo dir = new DirectoryInfo(Path.GetFullPath(tb.Text));
+                if (!dir.Exists)
+                {
+                    MessageBoxResult result = MessageBox.Show(
+                        "The folder '" + tb.Text + "' does not exist.  Reverting back to previous value of '" + revertTo + "'.",
+                        "Path validation failed",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Question);
+                    if (result == MessageBoxResult.OK)
+                    {
+                        tb.Text = revertTo;
+                        return;
+                    }
+                }
+            }
+            MusicSink.Properties.Settings.Default.Save();
+            return;
+        }
+
+        // Read all of the files under a path into a list of MusicFolder class
+        static public MusicFolder EnumerateMusicFolder(string sDir)
+        {
+            List<MusicFile> musicFiles = EnumerateFilesInPath(sDir);
+            MusicFolder musicFolder = new MusicFolder(sDir, musicFiles);
+            return (musicFolder);
+        }
+
+        // Read all of the files under a path into a list of MusicFile class
+        static private List<MusicFile> EnumerateFilesInPath(string sDir)
+        {
+            List<MusicFile> musicFiles = new List<MusicFile>();
+
+            try
+            {
+                foreach (string d in Directory.GetDirectories(sDir))
+                {
+                    foreach (string f in Directory.GetFiles(d))
+                    {
+                        MusicFile mf = new MusicFile(new System.IO.FileInfo(f));
+                        musicFiles.Add(mf);
+                        Console.WriteLine(f);
+                    }
+                    EnumerateFilesInPath(d);
+                }
+            }
+            catch
+            {
+                MessageBoxResult result = MessageBox.Show(
+                        "An error occurred trying to read all the files in the folder '" + sDir + "'.",
+                        "Failed to read files in path",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Question);
+            }
+
+            return (musicFiles);
+        }
+    }
+}
