@@ -14,15 +14,15 @@
         </Grid.ColumnDefinitions>
 
         <Label x:Name="remoteMasterLabel" Content="Remote Master Path" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="29" Width="137"/>
-        <TextBox x:Name="remoteMasterPath" HorizontalAlignment="Left" Height="23" Margin="152,14,0,0" TextWrapping="Wrap" Text="...remote path where your music library" VerticalAlignment="Top" Width="431"/>
+        <TextBox x:Name="remoteMasterPath" HorizontalAlignment="Left" Height="23" Margin="152,14,0,0" TextWrapping="Wrap" Loaded="remoteMasterBrowsePath_Loaded" Text="...remote path where your music library" VerticalAlignment="Top" Width="431"/>
         <Button x:Name="remoteMasterBrowseButton" Content="Browse" HorizontalAlignment="Left" Margin="604,16,0,0" VerticalAlignment="Top" Width="75" Click="remoteMasterBrowseButton_Click" Height="19"/>
 
         <Label x:Name="localMasterLabel" Content="Local Master Path" HorizontalAlignment="Left" Margin="10,39,0,0" VerticalAlignment="Top" Height="29" Width="137"/>
-        <TextBox x:Name="localMasterPath" HorizontalAlignment="Left" Height="23" Margin="152,42,0,0" TextWrapping="Wrap" Text="...local path where your music library" VerticalAlignment="Top" Width="431"/>
+        <TextBox x:Name="localMasterPath" HorizontalAlignment="Left" Height="23" Margin="152,42,0,0" TextWrapping="Wrap" Loaded="localMasterBrowsePath_Loaded" Text="...local path where your music library" VerticalAlignment="Top" Width="431"/>
         <Button x:Name="localMasterBrowseButton" Content="Browse" HorizontalAlignment="Left" Margin="605,43,0,0" VerticalAlignment="Top" Width="75" Click="localMasterBrowseButton_Click" Height="19"/>
 
         <Label x:Name="removableLabel" Content="Removable Media Path" HorizontalAlignment="Left" Margin="10,68,0,0" VerticalAlignment="Top" Height="29" Width="137"/>
-        <ComboBox x:Name="removableDrives" HorizontalAlignment="Left" Margin="152,70,0,0" VerticalAlignment="Top" Width="431" SelectionChanged="removableDrives_SelectionChanged"/>
+        <ComboBox x:Name="removableDriveCombo" ItemsSource="{Binding removableList}" HorizontalAlignment="Left" Margin="152,70,0,0" VerticalAlignment="Top" Width="431" Loaded="removableDriveCombo_Loaded" SelectionChanged="removableDriveCombo_SelectionChanged"/>
 
         <Button x:Name="scanMasterRemoteButton" Content="Scan the master repository for new music" HorizontalAlignment="Left" Margin="217,97,0,0" VerticalAlignment="Top" Width="298" Height="19" Click="scanMasterRemoteButton_Click"/>
 

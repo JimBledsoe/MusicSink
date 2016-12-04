@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Management;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -9,11 +10,14 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Forms;
+using UsbDriveEvents;
+
 
 namespace MusicSink
 {
@@ -22,28 +26,24 @@ namespace MusicSink
     /// </summary>
     public partial class MainWindow : Window
     {
-        //protected List<DriveInfo> driveList;        // decide which to use later
-        protected List<string> removableList;       // decide which to use later
-        //protected IEnumerable<string> removableDrives;       // decide which to use later
+        protected List<string> removableList;
+        private UsbDriveDetector usbDriveDetector = null;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            // Set sane defaults
-            remoteMasterPath.Text = null;
-            localMasterPath.Text = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic);
-            //driveList = DriveInfo.GetDrives().Where(d => d.DriveType == DriveType.Removable).ToList();
-            removableList = DriveInfo.GetDrives().Where(d => d.DriveType == DriveType.Removable).Select(s => s.ToString()).ToList();
-            //removableDrives = DriveInfo.GetDrives().Where(d => d.DriveType == DriveType.Removable).Select(s => s.ToString());
-            if (removableList.Count() == 0) 
-            {
-                removableList.Add("<insert removable media and select it>");
-            }
-            removableDriveCombo.ItemsSource = removableList;
-            removableDriveCombo.SelectedIndex = 0;
+            usbDriveDetector = new UsbDriveDetector();
+            usbDriveDetector.DeviceArrived += new DriveDetectorEventHandler(OnDriveArrived);
+            usbDriveDetector.DeviceRemoved += new DriveDetectorEventHandler(OnDriveRemoved);
+            //driveDetector.QueryRemove += new DriveDetectorEventHandler(OnQueryRemove);
 
             // Set last used settings
+        }
+
+        private void remoteMasterBrowsePath_Loaded(object sender, RoutedEventArgs e)
+        {
+            remoteMasterPath.Text = null;
         }
 
         private void remoteMasterBrowseButton_Click(object sender, RoutedEventArgs e)
@@ -57,6 +57,11 @@ namespace MusicSink
             }
         }
 
+        private void localMasterBrowsePath_Loaded(object sender, RoutedEventArgs e)
+        {
+            localMasterPath.Text = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic);
+        }
+
         private void localMasterBrowseButton_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new System.Windows.Forms.FolderBrowserDialog();
@@ -68,6 +73,47 @@ namespace MusicSink
             }
         }
 
+        private void enumerateRemovableDriveCombo()
+        {
+            removableList = DriveInfo.GetDrives().Where(d => d.DriveType == DriveType.Removable).Select(s => s.ToString()).ToList();
+            if (removableList.Count() == 0)
+            {
+                removableList.Add("<insert removable media and select it>");
+            }
+            removableDriveCombo.ItemsSource = removableList;
+            removableDriveCombo.SelectedIndex = 0;
+        }
+
+        private void OnDriveArrived(object sender, DriveDetectorEventArgs e)
+        {
+            e.HookQueryRemove = true;  // be given a chance to cancel the remove
+            enumerateRemovableDriveCombo();
+        }
+
+        private void OnDriveRemoved(object sender, DriveDetectorEventArgs e)
+        {
+            enumerateRemovableDriveCombo();
+        }
+
+
+        //// Called by DriveDetector when removable drive is about to be removed
+        //private void OnQueryRemove(object sender, DriveDetectorEventArgs e)
+        //{
+        //    // Should we allow the drive to be unplugged?
+        //    if (System.Windows.Forms.MessageBox.Show("Allow remove?", "Query remove",
+        //        MessageBoxButtons.YesNo, MessageBoxIcon.Question) ==
+        //            DialogResult.Yes)
+        //        e.Cancel = false;        // Allow removal
+        //    else
+        //        e.Cancel = true;         // Cancel the removal of the device
+        //}
+
+        private void removableDriveCombo_Loaded(object sender, RoutedEventArgs e)
+
+        {
+            enumerateRemovableDriveCombo();
+        }
+
         private void removableDriveCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
@@ -77,5 +123,7 @@ namespace MusicSink
         {
 
         }
+
+
     }
 }
