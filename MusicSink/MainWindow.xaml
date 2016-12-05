@@ -6,6 +6,14 @@
         xmlns:local="clr-namespace:MusicSink"
         mc:Ignorable="d"
         Title="MusicSink - Sync removable music media from a master repository" Height="400" Width="700">
+    <Window.Resources>
+        <Style TargetType="TextBlock" x:Key="Icon">
+            <Setter Property="FontFamily" Value="/Fonts/#FontAwesome" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Margin" Value="0" />
+        </Style>
+    </Window.Resources>
+
     <Grid Margin="4,4,4,4">
 
         <Label x:Name="remoteMasterLabel" Content="Remote Master Path" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="29" Width="137"/>
@@ -21,25 +29,6 @@
 
         <Button x:Name="scanMasterRemoteButton" Content="Scan the master repository for new music" HorizontalAlignment="Left" Margin="217,97,0,0" VerticalAlignment="Top" Width="298" Height="19" Click="scanMasterRemoteButton_Click"/>
 
-        <Grid HorizontalAlignment="Left" Height="215" Margin="11,136,0,0" VerticalAlignment="Top" Width="664">
-            
-        </Grid>
-        <Button x:Name="thumbUpButton" Content="ThumbUp" HorizontalAlignment="Left" Margin="14,101,0,0" VerticalAlignment="Top" Width="75"/>
-        <Button Height="75" Width="220" Padding="2">
-            <StackPanel Orientation="Horizontal">
-                <!--<ContentControl Template="{StaticResource ResourceKey=Thumb-Down}" />-->
-                <TextBlock FontSize="16" VerticalAlignment="Center" Text="Pay Now!" Margin="3" />
-            </StackPanel>
-        </Button>
-
-        <!--<ListView x:Name="listView" HorizontalAlignment="Left" Height="215" Margin="10,136,0,0" VerticalAlignment="Top" Width="664">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn/>
-                </GridView>
-            </ListView.View>
-        </ListView>-->
-
         <!--<TreeView x:Name="treeView" HorizontalAlignment="Left" Height="224" Margin="10,136,0,0" VerticalAlignment="Top" Width="664" ItemsSource="{Binding CurrentClass}">
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding Students}">
@@ -53,13 +42,45 @@
             </TreeView.ItemTemplate>
         </TreeView>-->
 
-        <!--<DataGrid x:Name="fileGrid" HorizontalAlignment="Left" Height="221" Margin="10,136,0,0" VerticalAlignment="Top" Width="664" ItemsSource="{Binding Source=workingList}" AutoGenerateColumns="False" CanUserResizeColumns="True">
+        <DataGrid x:Name="fileGrid" HorizontalAlignment="Left" Height="221" Margin="10,136,0,0" VerticalAlignment="Top" Width="664" ItemsSource="{Binding Source=workingList}" AutoGenerateColumns="False" CanUserResizeColumns="True">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Filename" Binding="{Binding fileName}" />
-                <DataGridTextColumn Header="Status" Binding="{Binding status}" />
-                <DataGridTextColumn Header="Ignored" Binding="{Binding isIgnored}" />
+                <DataGridTemplateColumn Header="Play" Width="38">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button x:Name="thumbUpButton" Click="onRowPlay">
+                                <StackPanel Orientation="Horizontal" Margin="1">
+                                    <TextBlock Text=" &#xF04b; " Style="{StaticResource Icon}" />
+                                </StackPanel>
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Copy" Width="38">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button x:Name="thumbUpButton" Click="onRowCopy">
+                                <StackPanel Orientation="Horizontal" Margin="1">
+                                    <TextBlock Text=" &#xF087; " Style="{StaticResource Icon}" />
+                                </StackPanel>
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Hide" Width="38">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button x:Name="thumbUpButton" Click="onRowHide">
+                                <StackPanel Orientation="Horizontal" Margin="1">
+                                    <TextBlock Text=" &#xF088; " Style="{StaticResource Icon}" />
+                                </StackPanel>
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Status" Binding="{Binding status}" Width="70"/>
+                <DataGridTextColumn Header="Filename" Binding="{Binding fileName}" Width="999"/>
             </DataGrid.Columns>
-        </DataGrid>-->
-
+        </DataGrid>
+        
     </Grid>
 </Window>

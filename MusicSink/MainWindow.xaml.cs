@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using UsbDriveEvents;
 
 
@@ -154,5 +155,26 @@ namespace MusicSink
               
         }
 
+        void onRowPlay(object sender, RoutedEventArgs e)
+        {
+        }
+
+        void onRowCopy(object sender, RoutedEventArgs e)
+        {
+        }
+
+        void onRowHide(object sender, RoutedEventArgs e)
+        {
+            for (var vis = sender as Visual; vis != null; vis = VisualTreeHelper.GetParent(vis) as Visual)
+            {
+                if (vis is DataGridRow)
+                {
+                    var row = (DataGridRow)vis;
+                    row.DetailsVisibility =
+                      row.DetailsVisibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+                    break;
+                }
+            }
+        }
     }
 }
