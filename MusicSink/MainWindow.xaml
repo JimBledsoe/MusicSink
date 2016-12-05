@@ -26,5 +26,18 @@
 
         <Button x:Name="scanMasterRemoteButton" Content="Scan the master repository for new music" HorizontalAlignment="Left" Margin="217,97,0,0" VerticalAlignment="Top" Width="298" Height="19" Click="scanMasterRemoteButton_Click"/>
 
+        <!--<TreeView x:Name="treeView" HorizontalAlignment="Left" Height="224" Margin="10,135,0,0" VerticalAlignment="Top" Width="670" ItemsSource="{Binding CurrentClass}">
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding Students}">
+                    <TextBlock Text="{Binding Year}" />
+                    <HierarchicalDataTemplate.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding FirstName}"> </TextBlock>
+                        </DataTemplate>
+                    </HierarchicalDataTemplate.ItemTemplate>
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>-->
+
     </Grid>
 </Window>
