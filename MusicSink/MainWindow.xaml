@@ -39,5 +39,13 @@
             </TreeView.ItemTemplate>
         </TreeView>-->
 
+        <!--<DataGrid x:Name="fileGrid" HorizontalAlignment="Left" Height="221" Margin="10,138,0,0" VerticalAlignment="Top" Width="668" ItemsSource="{Binding Source=workingList}" AutoGenerateColumns="False" CanUserResizeColumns="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Filename" Binding="{Binding fileName}" />
+                <DataGridTextColumn Header="Status" Binding="{Binding status}" />
+                <DataGridTextColumn Header="Ignored" Binding="{Binding isIgnored}" />
+            </DataGrid.Columns>
+        </DataGrid>-->
+        
     </Grid>
 </Window>
