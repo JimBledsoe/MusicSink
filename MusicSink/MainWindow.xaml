@@ -6,12 +6,7 @@
         xmlns:local="clr-namespace:MusicSink"
         mc:Ignorable="d"
         Title="MusicSink - Sync removable music media from a master repository" Height="400" Width="700">
-    <Grid Margin="0,0,4.2,0.4">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="0*"/>
-            <ColumnDefinition Width="0*"/>
-        </Grid.ColumnDefinitions>
+    <Grid Margin="4,4,4,4">
 
         <Label x:Name="remoteMasterLabel" Content="Remote Master Path" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="29" Width="137"/>
         <TextBox x:Name="remoteMasterPath" HorizontalAlignment="Left" Height="23" Margin="152,14,0,0" TextWrapping="Wrap" Loaded="remoteMasterPath_Loaded" Text="{Binding Source={StaticResource Settings}, Path=Default.RemoteMasterPath}" LostFocus="remoteMasterPath_Changed" KeyDown="remoteMasterPath_KeyDown" VerticalAlignment="Top" Width="431"/>
@@ -26,7 +21,19 @@
 
         <Button x:Name="scanMasterRemoteButton" Content="Scan the master repository for new music" HorizontalAlignment="Left" Margin="217,97,0,0" VerticalAlignment="Top" Width="298" Height="19" Click="scanMasterRemoteButton_Click"/>
 
-        <!--<TreeView x:Name="treeView" HorizontalAlignment="Left" Height="224" Margin="10,135,0,0" VerticalAlignment="Top" Width="670" ItemsSource="{Binding CurrentClass}">
+        <Grid HorizontalAlignment="Left" Height="215" Margin="11,136,0,0" VerticalAlignment="Top" Width="664">
+            
+        </Grid>
+
+        <!--<ListView x:Name="listView" HorizontalAlignment="Left" Height="215" Margin="10,136,0,0" VerticalAlignment="Top" Width="664">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn/>
+                </GridView>
+            </ListView.View>
+        </ListView>-->
+
+        <!--<TreeView x:Name="treeView" HorizontalAlignment="Left" Height="224" Margin="10,136,0,0" VerticalAlignment="Top" Width="664" ItemsSource="{Binding CurrentClass}">
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding Students}">
                     <TextBlock Text="{Binding Year}" />
@@ -39,13 +46,13 @@
             </TreeView.ItemTemplate>
         </TreeView>-->
 
-        <!--<DataGrid x:Name="fileGrid" HorizontalAlignment="Left" Height="221" Margin="10,138,0,0" VerticalAlignment="Top" Width="668" ItemsSource="{Binding Source=workingList}" AutoGenerateColumns="False" CanUserResizeColumns="True">
+        <!--<DataGrid x:Name="fileGrid" HorizontalAlignment="Left" Height="221" Margin="10,136,0,0" VerticalAlignment="Top" Width="664" ItemsSource="{Binding Source=workingList}" AutoGenerateColumns="False" CanUserResizeColumns="True">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Filename" Binding="{Binding fileName}" />
                 <DataGridTextColumn Header="Status" Binding="{Binding status}" />
                 <DataGridTextColumn Header="Ignored" Binding="{Binding isIgnored}" />
             </DataGrid.Columns>
         </DataGrid>-->
-        
+
     </Grid>
 </Window>
