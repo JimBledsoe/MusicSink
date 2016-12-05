@@ -36,15 +36,23 @@ namespace MusicSink
         // Read all of the files under a path into a list of MusicFolder class
         static public MusicFolder EnumerateMusicFolder(string sDir)
         {
-            List<MusicFile> musicFiles = EnumerateFilesInPath(sDir);
+            List<MusicFile> musicFiles = null;
+            musicFiles = EnumerateFilesInPath(sDir, musicFiles);
             MusicFolder musicFolder = new MusicFolder(sDir, musicFiles);
             return (musicFolder);
         }
 
         // Read all of the files under a path into a list of MusicFile class
-        static private List<MusicFile> EnumerateFilesInPath(string sDir)
+        static private List<MusicFile> EnumerateFilesInPath(string sDir, List<MusicFile> musicFiles)
         {
-            List<MusicFile> musicFiles = new List<MusicFile>();
+            List<MusicFile> outFiles = new List<MusicFile>();
+            if (musicFiles != null)
+            {
+                foreach (MusicFile file in musicFiles)
+                {
+                    outFiles.Add(file);
+                }
+            }
 
             try
             {
@@ -54,15 +62,15 @@ namespace MusicSink
                     // skip the manifest file
                     if (!f.Contains(Constants.ManifestFilename))
                     {
-                        MusicFile mf = new MusicFile(new System.IO.FileInfo(f));
-                        musicFiles.Add(mf);
+                        MusicFile mf = new MusicFile(f);
+                        outFiles.Add(mf);
                         Console.WriteLine(f);
                     }
                 }
                 // Recurse into the subdirs in this folder
                 foreach (string d in Directory.GetDirectories(sDir))
                 {
-                    EnumerateFilesInPath(d);
+                    outFiles = EnumerateFilesInPath(d, outFiles);
                 }
             }
             catch
@@ -74,7 +82,7 @@ namespace MusicSink
                         MessageBoxImage.Question);
             }
 
-            return (musicFiles);
+            return (outFiles);
         }
     }
 }
