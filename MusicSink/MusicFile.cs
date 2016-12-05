@@ -24,6 +24,7 @@ namespace MusicSink
         {
             FileInfo masterManifest = new FileInfo(Path.GetFullPath(folderName) + "\\" + Constants.ManifestFilename);
             MusicFolder currentMasterMusic, diskMasterMusic;
+            List<MusicFile> workingFiles = new List<MusicFile>();
 
             currentMasterMusic = FileUtils.EnumerateMusicFolder(folderName);
 
@@ -34,6 +35,7 @@ namespace MusicSink
             }
             else
             {
+                diskMasterMusic = new MusicFolder(folderName, null);
                 string json = Newtonsoft.Json.JsonConvert.SerializeObject(currentMasterMusic);
                 try
                 {
@@ -49,6 +51,43 @@ namespace MusicSink
 
                 }
             }
+
+            // Go through all the recently scanned files to see if any are not in the disk list (new files)
+            foreach (MusicFile currentFile in currentMasterMusic.musicFiles)
+            {
+                MusicFile searchFile = diskMasterMusic.musicFiles.Find(srch => srch.fileName == currentFile.fileName);
+                currentFile.isProcessed = true;
+
+                // If the file exists in the disk manifest, then we are good
+                if (searchFile != null)
+                {
+                    searchFile.isProcessed = true;
+                    currentFile.status = MusicFile.MusicFileStatus.Old;
+                    searchFile.status = MusicFile.MusicFileStatus.Old;
+                }
+                else  // Not in the disk manifest means a new file, add to our working list
+                {
+                    MusicFile newFile = new MusicFile(currentFile.fileName);
+                    currentFile.status = MusicFile.MusicFileStatus.New;
+                    newFile.status = MusicFile.MusicFileStatus.New;
+                    workingFiles.Add(newFile);
+                }
+            }
+
+            // Now go through the disk list and mark any unprocessed as deleted from the master
+            foreach (MusicFile currentFile in diskMasterMusic.musicFiles)
+            {
+                if (currentFile.isProcessed == false)
+                {
+                    currentFile.isProcessed = true;
+                    MusicFile newFile = new MusicFile(currentFile.fileName);
+                    currentFile.status = MusicFile.MusicFileStatus.Deleted;
+                    newFile.status = MusicFile.MusicFileStatus.Deleted;
+                    workingFiles.Add(newFile);
+                }
+            }
+
+            // Now put our working list to the UI
         }
     }
 
@@ -58,17 +97,13 @@ namespace MusicSink
         public DateTime timeStamp;
         public long size;
         public string md5;
+        public bool isProcessed;
+        public bool isIgnored;
+        public MusicFileStatus status;
 
-        //// Constructor from a FileInfo class
-        //public MusicFile(System.IO.FileInfo fi)
-        //{
-        //    fileName = fi.FullName;
-        //    timeStamp = fi.LastWriteTime;
-        //    size = fi.Length;
-        //    md5 = null; // calculateFileMD5(fileName);
-        //}
+        public enum MusicFileStatus { Unknown, New, Old, Deleted }
 
-        // Constructor from a raw data
+        // Constructor from a raw filename
         public MusicFile(string fname)
         {
             try
@@ -78,7 +113,9 @@ namespace MusicSink
                 timeStamp = fi.LastWriteTime;
                 size = fi.Length;
                 md5 = null; // calculateFileMD5(fileName);
-
+                isProcessed = false;
+                isIgnored = false;
+                status = MusicFileStatus.Unknown;
             }
             catch
             {
