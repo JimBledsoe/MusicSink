@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Media;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using UsbDriveEvents;
@@ -24,6 +26,7 @@ namespace MusicSink
     {
         protected List<string> removableList;
         private UsbDriveDetector usbDriveDetector = null;
+        public List<MusicFile> workingList = new List<MusicFile>();
 
         public MainWindow()
         {
@@ -34,11 +37,14 @@ namespace MusicSink
             usbDriveDetector.DeviceRemoved += new DriveDetectorEventHandler(OnDriveRemoved);
             //driveDetector.QueryRemove += new DriveDetectorEventHandler(OnQueryRemove);
 
-            // Set last used settings
+            // Link music file list to CollectionViewSource for the datagrid
+            CollectionViewSource itemCollectionViewSource;
+            itemCollectionViewSource = (CollectionViewSource)(FindResource("ItemCollectionViewSource"));
+            itemCollectionViewSource.Source = workingList;
         }
 
-        // Remote Master Widgets
-        private void remoteMasterPath_Loaded(object sender, RoutedEventArgs e)
+    // Remote Master Widgets
+    private void remoteMasterPath_Loaded(object sender, RoutedEventArgs e)
         {
             // empty is appropriate for the remote master
         }
@@ -151,12 +157,16 @@ namespace MusicSink
         // Begin the scan process widgets
         private void scanMasterRemoteButton_Click(object sender, RoutedEventArgs e)
         {
-            MusicFolder.scanMusicFolder(localMasterPath.Text);
-              
+            MusicFolder.scanMusicFolder(localMasterPath.Text, workingList);
+            fileGrid.Items.Refresh();
         }
 
-        void onRowPlay(object sender, RoutedEventArgs e)
+        void onRowPlayPause(object sender, RoutedEventArgs e)
         {
+            // TODO - only play implemented so far
+            MusicFile selectedFile = (MusicFile)fileGrid.SelectedItem;
+            mediaPlayer.Source = new Uri(selectedFile.fileName);
+            mediaPlayer.Play();
         }
 
         void onRowCopy(object sender, RoutedEventArgs e)

@@ -20,11 +20,10 @@ namespace MusicSink
         }
 
         // Begin the scan process widgets
-        static public void scanMusicFolder(string folderName)
+        static public void scanMusicFolder(string folderName, List<MusicFile> workingFiles)
         {
             FileInfo masterManifest = new FileInfo(Path.GetFullPath(folderName) + "\\" + Constants.ManifestFilename);
             MusicFolder currentMasterMusic, diskMasterMusic;
-            List<MusicFile> workingFiles = new List<MusicFile>();
 
             currentMasterMusic = FileUtils.EnumerateMusicFolder(folderName);
 
@@ -87,13 +86,13 @@ namespace MusicSink
                 }
             }
 
-            // Now put our working list to the UI
+            return;
         }
     }
 
-    class MusicFile
+    public class MusicFile
     {
-        public string fileName;
+        public string fileName { get; set; }
         public DateTime timeStamp;
         public long size;
         public string md5;

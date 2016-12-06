@@ -5,24 +5,25 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MusicSink"
         mc:Ignorable="d"
-        Title="MusicSink - Sync removable music media from a master repository" Height="400" Width="700">
+        Title="MusicSink - Sync removable music media from a master repository" Height="400" Width="700" ResizeMode="CanResize">
     <Window.Resources>
         <Style TargetType="TextBlock" x:Key="Icon">
             <Setter Property="FontFamily" Value="/Fonts/#FontAwesome" />
             <Setter Property="FontSize" Value="14" />
             <Setter Property="Margin" Value="0" />
         </Style>
+        <CollectionViewSource x:Key="ItemCollectionViewSource" CollectionViewType="ListCollectionView"/>
     </Window.Resources>
 
     <Grid Margin="4,4,4,4">
 
         <Label x:Name="remoteMasterLabel" Content="Remote Master Path" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="29" Width="137"/>
         <TextBox x:Name="remoteMasterPath" HorizontalAlignment="Left" Height="23" Margin="152,14,0,0" TextWrapping="Wrap" Loaded="remoteMasterPath_Loaded" Text="{Binding Source={StaticResource Settings}, Path=Default.RemoteMasterPath}" LostFocus="remoteMasterPath_Changed" KeyDown="remoteMasterPath_KeyDown" VerticalAlignment="Top" Width="431"/>
-        <Button x:Name="remoteMasterBrowseButton" Content="Browse" HorizontalAlignment="Left" Margin="604,16,0,0" VerticalAlignment="Top" Width="75" Click="remoteMasterBrowseButton_Click" Height="19"/>
+        <Button x:Name="remoteMasterBrowseButton" Content="Browse" HorizontalAlignment="Right" Margin="0,16,10,0" VerticalAlignment="Top" Width="75" Click="remoteMasterBrowseButton_Click" Height="19"/>
 
         <Label x:Name="localMasterLabel" Content="Local Master Path" HorizontalAlignment="Left" Margin="10,39,0,0" VerticalAlignment="Top" Height="29" Width="137"/>
-        <TextBox x:Name="localMasterPath" HorizontalAlignment="Left" Height="23" Margin="152,42,0,0" TextWrapping="Wrap" Loaded="localMasterPath_Loaded" Text="{Binding Source={StaticResource Settings}, Path=Default.LocalMasterPath}" LostFocus="localMasterPath_Changed" KeyDown="localMasterPath_KeyDown" VerticalAlignment="Top" Width="431"/>
-        <Button x:Name="localMasterBrowseButton" Content="Browse" HorizontalAlignment="Left" Margin="605,43,0,0" VerticalAlignment="Top" Width="75" Click="localMasterBrowseButton_Click" Height="19"/>
+        <TextBox x:Name="localMasterPath" HorizontalAlignment="Left" Height="23" Margin="152,42,102,0" TextWrapping="Wrap" Loaded="localMasterPath_Loaded" Text="{Binding Source={StaticResource Settings}, Path=Default.LocalMasterPath}" LostFocus="localMasterPath_Changed" KeyDown="localMasterPath_KeyDown" VerticalAlignment="Top" Width="431"/>
+        <Button x:Name="localMasterBrowseButton" Content="Browse" HorizontalAlignment="Right" Margin="0,44,10,0" VerticalAlignment="Top" Width="75" Click="localMasterBrowseButton_Click" Height="19"/>
 
         <Label x:Name="removableLabel" Content="Removable Media Path" HorizontalAlignment="Left" Margin="10,68,0,0" VerticalAlignment="Top" Height="29" Width="137"/>
         <ComboBox x:Name="removableDriveCombo" ItemsSource="{Binding removableList}" HorizontalAlignment="Left" Margin="152,70,0,0" VerticalAlignment="Top" Width="431" Loaded="removableDriveCombo_Loaded" SelectionChanged="removableDriveCombo_SelectionChanged"/>
@@ -42,14 +43,16 @@
             </TreeView.ItemTemplate>
         </TreeView>-->
 
-        <DataGrid x:Name="fileGrid" HorizontalAlignment="Left" Height="221" Margin="10,136,0,0" VerticalAlignment="Top" Width="664" ItemsSource="{Binding Source=workingList}" AutoGenerateColumns="False" CanUserResizeColumns="True">
+        <DataGrid x:Name="fileGrid" HorizontalAlignment="Left" Height="221" Margin="10,136,0,0" VerticalAlignment="Top" Width="664" 
+                  DataContext="{StaticResource ItemCollectionViewSource}" ItemsSource="{Binding}" AutoGenerateColumns="False" CanUserResizeColumns="True">
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="Play" Width="38">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button x:Name="thumbUpButton" Click="onRowPlay">
+                            <Button x:Name="playPauseButton" Click="onRowPlayPause">
                                 <StackPanel Orientation="Horizontal" Margin="1">
                                     <TextBlock Text=" &#xF04b; " Style="{StaticResource Icon}" />
+                                    <!-- <TextBlock Text=" &#xF04c; " Style="{StaticResource Icon}"/> -->
                                 </StackPanel>
                             </Button>
                         </DataTemplate>
@@ -69,7 +72,7 @@
                 <DataGridTemplateColumn Header="Hide" Width="38">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button x:Name="thumbUpButton" Click="onRowHide">
+                            <Button x:Name="thumbDownButton" Click="onRowHide">
                                 <StackPanel Orientation="Horizontal" Margin="1">
                                     <TextBlock Text=" &#xF088; " Style="{StaticResource Icon}" />
                                 </StackPanel>
@@ -78,9 +81,10 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTextColumn Header="Status" Binding="{Binding status}" Width="70"/>
-                <DataGridTextColumn Header="Filename" Binding="{Binding fileName}" Width="999"/>
+                <DataGridTextColumn Header="Filename" Binding="{Binding fileName}" Width="*"/>
             </DataGrid.Columns>
         </DataGrid>
-        
+
+        <MediaElement Height="120" Margin="10,10,108,0" LoadedBehavior="Manual" Name="mediaPlayer" VerticalAlignment="Center" Visibility="Hidden" />
     </Grid>
 </Window>
