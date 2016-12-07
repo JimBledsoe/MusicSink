@@ -5,6 +5,7 @@ using System.Linq;
 using System.Media;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -161,19 +162,34 @@ namespace MusicSink
             fileGrid.Items.Refresh();
         }
 
-        void onRowPlayPause(object sender, RoutedEventArgs e)
+        private void onRowPlayPause(object sender, RoutedEventArgs e)
         {
             // TODO - only play implemented so far
             MusicFile selectedFile = (MusicFile)fileGrid.SelectedItem;
-            mediaPlayer.Source = new Uri(selectedFile.fileName);
-            mediaPlayer.Play();
+
+            Uri newMusic = new Uri(selectedFile.fileName);
+            // If we have clicked on a new row, then load up the file
+            if (newMusic != mediaPlayer.Source)
+            {
+                mediaPlayer.Source = new Uri(selectedFile.fileName);
+                // unset last row IsChecked state
+            }
+
+            if ((sender as ToggleButton).IsChecked == true)
+            {
+                mediaPlayer.Play();
+            }
+            else
+            {
+                mediaPlayer.Pause();
+            }
         }
 
-        void onRowCopy(object sender, RoutedEventArgs e)
+        private void onRowCopy(object sender, RoutedEventArgs e)
         {
         }
 
-        void onRowHide(object sender, RoutedEventArgs e)
+        private void onRowHide(object sender, RoutedEventArgs e)
         {
             for (var vis = sender as Visual; vis != null; vis = VisualTreeHelper.GetParent(vis) as Visual)
             {
