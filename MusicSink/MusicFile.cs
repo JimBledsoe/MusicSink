@@ -98,7 +98,7 @@ namespace MusicSink
         public string md5;
         public bool isProcessed;
         public bool isIgnored;
-        public MusicFileStatus status;
+        public MusicFileStatus status { get; set; }
 
         public enum MusicFileStatus { Unknown, New, Old, Deleted }
 

@@ -49,12 +49,12 @@
                 <DataGridTemplateColumn Header="Play" Width="38">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button x:Name="playPauseButton" Click="onRowPlayPause">
+                            <ToggleButton x:Name="playPauseButton" Click="onRowPlayPause" Command="{Binding onRowPlayPause}" CommandParameter="{Binding ElementName=playPauseButton, Path=IsChecked}">
                                 <StackPanel Orientation="Horizontal" Margin="1">
                                     <TextBlock Text=" &#xF04b; " Style="{StaticResource Icon}" />
                                     <!-- <TextBlock Text=" &#xF04c; " Style="{StaticResource Icon}"/> -->
                                 </StackPanel>
-                            </Button>
+                            </ToggleButton>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
