@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -44,8 +45,8 @@ namespace MusicSink
             itemCollectionViewSource.Source = workingList;
         }
 
-    // Remote Master Widgets
-    private void remoteMasterPath_Loaded(object sender, RoutedEventArgs e)
+        // Remote Master Widgets
+        private void remoteMasterPath_Loaded(object sender, RoutedEventArgs e)
         {
             // empty is appropriate for the remote master
         }
@@ -158,24 +159,41 @@ namespace MusicSink
         // Begin the scan process widgets
         private void scanMasterRemoteButton_Click(object sender, RoutedEventArgs e)
         {
+            // Force stop any currently playing media, as we are about to reload our list
+            if (mediaPlayer.Source != null)
+            {
+                mediaPlayer.Stop();
+                mediaPlayer.Source = null;
+            }
+
+            // Scan and load a fresh list
             MusicFolder.scanMusicFolder(localMasterPath.Text, workingList);
             fileGrid.Items.Refresh();
         }
 
+        static private ToggleButton lastPlayButton = null;
         private void onRowPlayPause(object sender, RoutedEventArgs e)
         {
-            // TODO - only play implemented so far
             MusicFile selectedFile = (MusicFile)fileGrid.SelectedItem;
+            bool currentIsChecked = ((sender as ToggleButton).IsChecked == true);
 
             Uri newMusic = new Uri(selectedFile.fileName);
             // If we have clicked on a new row, then load up the file
             if (newMusic != mediaPlayer.Source)
             {
                 mediaPlayer.Source = new Uri(selectedFile.fileName);
-                // unset last row IsChecked state
-            }
+                // uncheck the last row that was checked (radio style toggles)
+                if (lastPlayButton != null)
+                {
+                    lastPlayButton.IsChecked = false;
+                    lastPlayButton.UpdateLayout();
+                    // overkill - lastPlayButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+                }
 
-            if ((sender as ToggleButton).IsChecked == true)
+            }
+            lastPlayButton = (sender as ToggleButton);
+
+            if (currentIsChecked)
             {
                 mediaPlayer.Play();
             }
