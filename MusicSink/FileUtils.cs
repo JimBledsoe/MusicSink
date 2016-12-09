@@ -10,7 +10,7 @@ namespace MusicSink
     class FileUtils
     {
         // Validate the path entered into a path textbox in the UI
-        static public void validatePathTextbox(TextBox tb, string revertTo)
+        static public bool validatePathTextbox(TextBox tb, string revertTo)
         {
             if (tb.Text.Length > 0)
             {
@@ -25,12 +25,30 @@ namespace MusicSink
                     if (result == MessageBoxResult.OK)
                     {
                         tb.Text = revertTo;
-                        return;
+                        return false;
                     }
                 }
             }
             MusicSink.Properties.Settings.Default.Save();
-            return;
+            return (tb.Text.Length > 0);
+        }
+
+        // Validate the path entered into a path combobox in the UI
+        static public bool validatePathCombobox(ComboBox cb)
+        {
+            try
+            {
+                if (cb.SelectedItem.ToString().Length > 0)
+                {
+                    DirectoryInfo dir = new DirectoryInfo(Path.GetFullPath(cb.SelectedItem.ToString()));
+                    return (dir.Exists);
+                }
+            }
+            catch
+            {
+                return false;
+            }
+            return false;
         }
 
         // Read all of the files under a path into a list of MusicFolder class

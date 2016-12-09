@@ -29,6 +29,10 @@ namespace MusicSink
         protected List<string> removableList;
         private UsbDriveDetector usbDriveDetector = null;
         public List<MusicFile> workingList = new List<MusicFile>();
+        //public string MediaPlaying {
+        //    get { return mediaPlayer.Source.ToString(); }
+        //    set { mediaPlayer.Source = new Uri(value); }
+        //}
 
         public MainWindow()
         {
@@ -45,10 +49,13 @@ namespace MusicSink
             itemCollectionViewSource.Source = workingList;
         }
 
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Remote Master Widgets
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
         private void remoteMasterPath_Loaded(object sender, RoutedEventArgs e)
         {
             // empty is appropriate for the remote master
+            remoteMasterScanButton.IsEnabled = FileUtils.validatePathTextbox(remoteMasterPath, Properties.Settings.Default["remoteMasterPath"].ToString());
         }
 
         private void remoteMasterBrowseButton_Click(object sender, RoutedEventArgs e)
@@ -64,7 +71,7 @@ namespace MusicSink
 
         private void remoteMasterPath_Changed(object sender, RoutedEventArgs e)
         {
-            FileUtils.validatePathTextbox(remoteMasterPath, Properties.Settings.Default["remoteMasterPath"].ToString());
+            remoteMasterScanButton.IsEnabled = FileUtils.validatePathTextbox(remoteMasterPath, Properties.Settings.Default["remoteMasterPath"].ToString());
         }
 
         private void remoteMasterPath_KeyDown(object sender, KeyEventArgs e)
@@ -75,7 +82,18 @@ namespace MusicSink
             }
         }
 
+        private void remoteMasterScanButton_Click(object sender, RoutedEventArgs e)
+        {
+            mediaStop();
+            workingList.Clear();
+            filesGrid.Items.Refresh();  // Can't make the grid appear blank while loading yet....
+            MusicFolder.scanMusicFolder(remoteMasterPath.Text, workingList);
+            filesGrid.Items.Refresh();
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Local Master Widgets
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
         private void localMasterPath_Loaded(object sender, RoutedEventArgs e)
         {
             // Use the MyMusic folder by default if no local master is defined yet
@@ -83,6 +101,7 @@ namespace MusicSink
             {
                 localMasterPath.Text = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic);
             }
+            localMasterScanButton.IsEnabled = FileUtils.validatePathTextbox(localMasterPath, Properties.Settings.Default["localMasterPath"].ToString());
         }
 
         private void localMasterBrowseButton_Click(object sender, RoutedEventArgs e)
@@ -98,7 +117,7 @@ namespace MusicSink
 
         private void localMasterPath_Changed(object sender, RoutedEventArgs e)
         {
-            FileUtils.validatePathTextbox(localMasterPath, Properties.Settings.Default["localMasterPath"].ToString());
+            localMasterScanButton.IsEnabled = FileUtils.validatePathTextbox(localMasterPath, Properties.Settings.Default["localMasterPath"].ToString());
         }
 
         private void localMasterPath_KeyDown(object sender, KeyEventArgs e)
@@ -109,16 +128,25 @@ namespace MusicSink
             }
         }
 
+        private void localMasterScanButton_Click(object sender, RoutedEventArgs e)
+        {
+            mediaStop();
+            workingList.Clear();
+            filesGrid.Items.Refresh();  // Can't make the grid appear blank while loading yet....
+            MusicFolder.scanMusicFolder(localMasterPath.Text, workingList);
+            filesGrid.Items.Refresh();
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Removable Media Widgets
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
         private void enumerateRemovableDriveCombo()
         {
             removableList = DriveInfo.GetDrives().Where(d => d.DriveType == DriveType.Removable).Select(s => s.ToString()).ToList();
-            if (removableList.Count() == 0)
-            {
-                removableList.Add("<insert removable media and select it>");
-            }
+            removableList.Insert(0, "<No removable media drive selected>");
             removableDriveCombo.ItemsSource = removableList;
-            removableDriveCombo.SelectedIndex = 0;
+            removableDriveCombo.SelectedIndex = (removableList.Count > 1) ? 1 : 0;  // Select first valid drive (skip bogus first entry)
+            removableScanButton.IsEnabled = FileUtils.validatePathCombobox(removableDriveCombo);
         }
 
         private void OnDriveArrived(object sender, DriveDetectorEventArgs e)
@@ -131,7 +159,6 @@ namespace MusicSink
         {
             enumerateRemovableDriveCombo();
         }
-
 
         //// Called by DriveDetector when removable drive is about to be removed
         //private void OnQueryRemove(object sender, DriveDetectorEventArgs e)
@@ -153,28 +180,32 @@ namespace MusicSink
 
         private void removableDriveCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
+            removableScanButton.IsEnabled = FileUtils.validatePathCombobox(removableDriveCombo);
         }
 
-        // Begin the scan process widgets
-        private void scanMasterRemoteButton_Click(object sender, RoutedEventArgs e)
+        private void removableScanButton_Click(object sender, RoutedEventArgs e)
         {
-            // Force stop any currently playing media, as we are about to reload our list
-            if (mediaPlayer.Source != null)
-            {
-                mediaPlayer.Stop();
-                mediaPlayer.Source = null;
-            }
+            mediaStop();
+            workingList.Clear();
+            filesGrid.Items.Refresh();  // Can't make the grid appear blank while loading yet....
+            MusicFolder.scanMusicFolder(removableDriveCombo.Text, workingList);
+            filesGrid.Items.Refresh();
+        }
 
-            // Scan and load a fresh list
-            MusicFolder.scanMusicFolder(localMasterPath.Text, workingList);
-            fileGrid.Items.Refresh();
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Data Grid Widgets
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+        private void filesClearButton_Click(object sender, RoutedEventArgs e)
+        {
+            mediaStop();
+            workingList.Clear();
+            filesGrid.Items.Refresh();
         }
 
         static private ToggleButton lastPlayButton = null;
         private void onRowPlayPause(object sender, RoutedEventArgs e)
         {
-            MusicFile selectedFile = (MusicFile)fileGrid.SelectedItem;
+            MusicFile selectedFile = (MusicFile)filesGrid.SelectedItem;
             bool currentIsChecked = ((sender as ToggleButton).IsChecked == true);
 
             Uri newMusic = new Uri(selectedFile.fileName);
@@ -187,7 +218,6 @@ namespace MusicSink
                 {
                     lastPlayButton.IsChecked = false;
                     lastPlayButton.UpdateLayout();
-                    // overkill - lastPlayButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
                 }
 
             }
@@ -218,6 +248,18 @@ namespace MusicSink
                       row.DetailsVisibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
                     break;
                 }
+            }
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Helper Methods
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+        private void mediaStop()
+        {
+            if (mediaPlayer.Source != null)
+            {
+                mediaPlayer.Stop();
+                mediaPlayer.Source = null;
             }
         }
     }

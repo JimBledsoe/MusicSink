@@ -100,7 +100,7 @@ namespace MusicSink
         public bool isIgnored;
         public MusicFileStatus status { get; set; }
 
-        public enum MusicFileStatus { Unknown, New, Old, Deleted }
+        public enum MusicFileStatus { Unknown, New, Old, Deleted, Hidden }
 
         // Constructor from a raw filename
         public MusicFile(string fname)
