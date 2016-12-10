@@ -15,25 +15,25 @@
         <CollectionViewSource x:Key="ItemCollectionViewSource" CollectionViewType="ListCollectionView"/>
     </Window.Resources>
 
-    <Grid Margin="4,4,4,4">
+    <Grid Margin="8,8,8,8">
 
-        <Label x:Name="remoteMasterLabel" Content="Remote Master" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="29"/>
-        <TextBox x:Name="remoteMasterPath" HorizontalAlignment="Left" Height="23" Margin="120,10,0,0" TextWrapping="Wrap" Loaded="remoteMasterPath_Loaded" Text="{Binding Source={StaticResource Settings}, Path=Default.RemoteMasterPath}" LostFocus="remoteMasterPath_Changed" KeyDown="remoteMasterPath_KeyDown" VerticalAlignment="Top" Width="373"/>
-        <Button x:Name="remoteMasterBrowseButton" Content="Browse" HorizontalAlignment="Right" Margin="0,10,108,0" VerticalAlignment="Top" Width="75" Click="remoteMasterBrowseButton_Click" Height="19"/>
-        <Button x:Name="remoteMasterScanButton" Content="Scan" HorizontalAlignment="Right" Margin="0,10,28,0" VerticalAlignment="Top" Width="75" Click="remoteMasterScanButton_Click" Height="19" IsEnabled="False"/>
+        <Label x:Name="remoteMasterLabel" Content="Remote Master" HorizontalAlignment="Left" VerticalAlignment="Top" Height="23"/>
+        <TextBox x:Name="remoteMasterPath" HorizontalAlignment="Stretch" Height="23" Width="auto" Margin="110,0,170,0" TextWrapping="Wrap" Loaded="remoteMasterPath_Loaded" Text="{Binding Source={StaticResource Settings}, Path=Default.RemoteMasterPath}" LostFocus="remoteMasterPath_Changed" KeyDown="remoteMasterPath_KeyDown" VerticalAlignment="Top"/>
+        <Button x:Name="remoteMasterBrowseButton" Content="Browse" HorizontalAlignment="Right" Margin="0,2,85,0" VerticalAlignment="Top" Width="75" Click="remoteMasterBrowseButton_Click" Height="19"/>
+        <Button x:Name="remoteMasterScanButton" Content="Scan" HorizontalAlignment="Right" Margin="0,2,0,0" VerticalAlignment="Top" Width="75" Click="remoteMasterScanButton_Click" Height="19" IsEnabled="False"/>
 
-        <Label x:Name="localMasterLabel" Content="Local Master" HorizontalAlignment="Left" Margin="10,39,0,0" VerticalAlignment="Top" Height="29"/>
-        <TextBox x:Name="localMasterPath" HorizontalAlignment="Left" Height="23" Margin="120,40,0,0" TextWrapping="Wrap" Loaded="localMasterPath_Loaded" Text="{Binding Source={StaticResource Settings}, Path=Default.LocalMasterPath}" LostFocus="localMasterPath_Changed" KeyDown="localMasterPath_KeyDown" VerticalAlignment="Top" Width="373"/>
-        <Button x:Name="localMasterBrowseButton" Content="Browse" HorizontalAlignment="Right" Margin="0,40,108,0" VerticalAlignment="Top" Width="75" Click="localMasterBrowseButton_Click" Height="19"/>
-        <Button x:Name="localMasterScanButton" Content="Scan" HorizontalAlignment="Right" Margin="0,40,28,0" VerticalAlignment="Top" Width="75" Click="localMasterScanButton_Click" Height="19" IsEnabled="False"/>
+        <Label x:Name="localMasterLabel" Content="Local Master" HorizontalAlignment="Left" Margin="0,28,0,0" VerticalAlignment="Top" Height="23"/>
+        <TextBox x:Name="localMasterPath" HorizontalAlignment="Stretch" Height="23" Width="auto" Margin="110,28,170,0" TextWrapping="Wrap" Loaded="localMasterPath_Loaded" Text="{Binding Source={StaticResource Settings}, Path=Default.LocalMasterPath}" LostFocus="localMasterPath_Changed" KeyDown="localMasterPath_KeyDown" VerticalAlignment="Top"/>
+        <Button x:Name="localMasterBrowseButton" Content="Browse" HorizontalAlignment="Right" Margin="0,31,85,0" VerticalAlignment="Top" Width="75" Click="localMasterBrowseButton_Click" Height="19"/>
+        <Button x:Name="localMasterScanButton" Content="Scan" HorizontalAlignment="Right" Margin="0,31,0,0" VerticalAlignment="Top" Width="75" Click="localMasterScanButton_Click" Height="19" IsEnabled="False"/>
 
-        <Label x:Name="removableLabel" Content="Removable Media" HorizontalAlignment="Left" Margin="10,68,0,0" VerticalAlignment="Top" Height="29"/>
-        <ComboBox x:Name="removableDriveCombo" ItemsSource="{Binding removableList}" HorizontalAlignment="Left" Margin="120,70,0,0" VerticalAlignment="Top" Width="373" Loaded="removableDriveCombo_Loaded" SelectionChanged="removableDriveCombo_SelectionChanged"/>
-        <Button x:Name="removableScanButton" Content="Scan" HorizontalAlignment="Right" Margin="0,70,28,0" VerticalAlignment="Top" Width="75" Click="removableScanButton_Click" Height="19" IsEnabled="False"/>
+        <Label x:Name="removableLabel" Content="Removable Media" HorizontalAlignment="Left" Margin="0,56,0,0" VerticalAlignment="Top" Height="23"/>
+        <ComboBox x:Name="removableDriveCombo" ItemsSource="{Binding removableList}" HorizontalAlignment="Stretch"  Width="auto" Margin="110,56,170,0" VerticalAlignment="Top" Loaded="removableDriveCombo_Loaded" SelectionChanged="removableDriveCombo_SelectionChanged"/>
+        <Button x:Name="removableScanButton" Content="Scan" HorizontalAlignment="Right" Margin="0,60,0,0" VerticalAlignment="Top" Width="75" Click="removableScanButton_Click" Height="19" IsEnabled="False"/>
 
-        <Button x:Name="clearGridButton" Content="Clear the working list" HorizontalAlignment="Left" Margin="509,112,0,0" VerticalAlignment="Top" Width="165" Height="19" Click="filesClearButton_Click"/>
-        <Label x:Name="filesGridLabel" Content="New music files requiring a decision" HorizontalAlignment="Left" Margin="10,107,0,0" VerticalAlignment="Top" Height="29"/>
-        <DataGrid x:Name="filesGrid" HorizontalAlignment="Left" Height="221" Margin="10,136,0,0" VerticalAlignment="Top" Width="664" 
+        <Button x:Name="clearGridButton" Content="Clear the working list" HorizontalAlignment="Right" Margin="0,117,0,0" VerticalAlignment="Top" Width="165" Height="19" Click="filesClearButton_Click"/>
+        <Label x:Name="filesGridLabel" Content="New music files requiring a decision" HorizontalAlignment="Left" Margin="0,112,0,0" VerticalAlignment="Top" Height="29"/>
+        <DataGrid x:Name="filesGrid" HorizontalAlignment="Stretch" Margin="0,141,0,23" VerticalAlignment="Stretch" Width="Auto" 
                   DataContext="{StaticResource ItemCollectionViewSource}" ItemsSource="{Binding}" AutoGenerateColumns="False" CanUserResizeColumns="True">
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="Play" Width="38">
@@ -81,6 +81,18 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        <MediaElement Height="120" Margin="10,10,108,0" LoadedBehavior="Manual" Name="mediaPlayer" VerticalAlignment="Center" Visibility="Hidden" />
+        <MediaElement Height="120" Margin="10,10,10,10" LoadedBehavior="Manual" Name="mediaPlayer" VerticalAlignment="Center" Visibility="Hidden" />
+
+        <!--<StatusBar HorizontalAlignment="Stretch" Height="25" Margin="0,326,0,-25" VerticalAlignment="Bottom" Width="Auto" />-->
+
+        <StatusBar HorizontalAlignment="Stretch" Width="auto" VerticalAlignment="Bottom" Height="23" Margin="1,0,1,0">
+            <StatusBarItem HorizontalAlignment="Stretch" Width="Auto">
+                <TextBlock Name="lblMessage" Text="Set your paths and scan folders."/>
+            </StatusBarItem>
+            <StatusBarItem HorizontalAlignment="Right" Width="Auto">
+                <ProgressBar Height="10" Width="100"/>
+            </StatusBarItem>
+        </StatusBar>
     </Grid>
+
 </Window>
