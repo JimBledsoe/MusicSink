@@ -90,7 +90,7 @@
                 <TextBlock Name="lblMessage" Text="Set your paths and scan folders."/>
             </StatusBarItem>
             <StatusBarItem HorizontalAlignment="Right" Width="Auto">
-                <ProgressBar Height="10" Width="100"/>
+                <ProgressBar Name="progressBar" Height="10" Width="100"/>
             </StatusBarItem>
         </StatusBar>
     </Grid>
