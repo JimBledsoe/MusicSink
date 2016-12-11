@@ -20,22 +20,29 @@ namespace MusicSink
         }
 
         // Begin the scan process widgets
-        static public void scanMusicFolder(string folderName, List<MusicFile> workingFiles)
+        static public string scanMusicFolder(string folderName, List<MusicFile> workingFiles)
         {
+            int addedCount = 0;
+            int deletedCount = 0;
             FileInfo masterManifest = new FileInfo(Path.GetFullPath(folderName) + "\\" + Constants.ManifestFilename);
-            MusicFolder currentMasterMusic, diskMasterMusic;
+            MusicFolder scannedMasterMusic = null;
+            MusicFolder manifestMasterMusic = null;
 
-            currentMasterMusic = FileUtils.EnumerateMusicFolder(folderName);
+            // Scan the master folder and build a fresh list
+            Console.WriteLine("Scan the folder for music files....");
+            scannedMasterMusic = FileUtils.EnumerateMusicFolder(folderName);
 
+            // If we have a previous manifest on the master folder, read it in
+            Console.WriteLine("Look for a manifest file in the folder....");
             if (masterManifest.Exists)
             {
                 string json = File.ReadAllText(masterManifest.FullName);
-                diskMasterMusic = Newtonsoft.Json.JsonConvert.DeserializeObject<MusicFolder>(json);
+                manifestMasterMusic = Newtonsoft.Json.JsonConvert.DeserializeObject<MusicFolder>(json);
             }
             else
             {
-                diskMasterMusic = new MusicFolder(folderName, null);
-                string json = Newtonsoft.Json.JsonConvert.SerializeObject(currentMasterMusic);
+                manifestMasterMusic = new MusicFolder(folderName, null);
+                string json = Newtonsoft.Json.JsonConvert.SerializeObject(scannedMasterMusic);
                 try
                 {
                     File.WriteAllText(masterManifest.FullName, json);
@@ -52,9 +59,15 @@ namespace MusicSink
             }
 
             // Go through all the recently scanned files to see if any are not in the disk list (new files)
-            foreach (MusicFile currentFile in currentMasterMusic.musicFiles)
+            Console.WriteLine("Chew through all the files we just scanned....");
+            foreach (MusicFile currentFile in scannedMasterMusic.musicFiles)
             {
-                MusicFile searchFile = diskMasterMusic.musicFiles.Find(srch => srch.fileName == currentFile.fileName);
+                MusicFile searchFile = null;
+                    
+                if (manifestMasterMusic.musicFiles != null)
+                {
+                    searchFile = manifestMasterMusic.musicFiles.Find(srch => srch.fileName == currentFile.fileName);
+                }
                 currentFile.isProcessed = true;
 
                 // If the file exists in the disk manifest, then we are good
@@ -69,24 +82,35 @@ namespace MusicSink
                     MusicFile newFile = new MusicFile(currentFile.fileName);
                     currentFile.status = MusicFile.MusicFileStatus.New;
                     newFile.status = MusicFile.MusicFileStatus.New;
+                    addedCount++;
                     workingFiles.Add(newFile);
                 }
             }
 
+            Console.WriteLine("Now walk all the manifest files looking for deleted ones....");
             // Now go through the disk list and mark any unprocessed as deleted from the master
-            foreach (MusicFile currentFile in diskMasterMusic.musicFiles)
+            if (manifestMasterMusic.musicFiles != null)
             {
-                if (currentFile.isProcessed == false)
+                foreach (MusicFile currentFile in manifestMasterMusic.musicFiles)
                 {
-                    currentFile.isProcessed = true;
-                    MusicFile newFile = new MusicFile(currentFile.fileName);
-                    currentFile.status = MusicFile.MusicFileStatus.Deleted;
-                    newFile.status = MusicFile.MusicFileStatus.Deleted;
-                    workingFiles.Add(newFile);
+                    if (currentFile.isProcessed == false)
+                    {
+                        currentFile.isProcessed = true;
+                        MusicFile newFile = new MusicFile(currentFile.fileName);
+                        currentFile.status = MusicFile.MusicFileStatus.Deleted;
+                        newFile.status = MusicFile.MusicFileStatus.Deleted;
+                        deletedCount++;
+                        //workingFiles.Add(newFile);
+                    }
                 }
             }
 
-            return;
+            Console.WriteLine("Scanning process is complete....");
+            return (manifestMasterMusic.musicFiles.Count + " files in library, " + 
+                    scannedMasterMusic.musicFiles.Count + " files scanned, " + 
+                    addedCount + " files added, " + 
+                    deletedCount + " files deleted" +
+                    workingFiles.Count + " files to process");
         }
     }
 
@@ -105,20 +129,31 @@ namespace MusicSink
         // Constructor from a raw filename
         public MusicFile(string fname)
         {
-            try
+            fileName = "";
+            // timeStamp = ??? what to initialize to;
+            size = -1;
+            md5 = null;
+            isProcessed = false;
+            isIgnored = false;
+            status = MusicFileStatus.Deleted;
+
+            if (fname != null)
             {
-                FileInfo fi = new FileInfo(fname);
-                fileName = fi.FullName;
-                timeStamp = fi.LastWriteTime;
-                size = fi.Length;
-                md5 = null; // calculateFileMD5(fileName);
-                isProcessed = false;
-                isIgnored = false;
-                status = MusicFileStatus.Unknown;
-            }
-            catch
-            {
-                // I guess it will be left as null
+                try
+                {
+                    FileInfo fi = new FileInfo(fname);
+                    if (fi.Exists)
+                    {
+                        fileName = fi.FullName;
+                        timeStamp = fi.LastWriteTime;
+                        size = fi.Length;
+                        md5 = null; // calculateFileMD5(fileName);
+                        status = MusicFileStatus.Unknown;
+                    }
+                }
+                catch
+                {
+                }
             }
         }
 

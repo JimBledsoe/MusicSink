@@ -87,7 +87,7 @@ namespace MusicSink
             mediaStop();
             workingList.Clear();
             filesGrid.Items.Refresh();  // Can't make the grid appear blank while loading yet....
-            MusicFolder.scanMusicFolder(remoteMasterPath.Text, workingList);
+            lblMessage.Text = MusicFolder.scanMusicFolder(remoteMasterPath.Text, workingList);
             filesGrid.Items.Refresh();
         }
 
@@ -133,7 +133,7 @@ namespace MusicSink
             mediaStop();
             workingList.Clear();
             filesGrid.Items.Refresh();  // Can't make the grid appear blank while loading yet....
-            MusicFolder.scanMusicFolder(localMasterPath.Text, workingList);
+            lblMessage.Text = MusicFolder.scanMusicFolder(localMasterPath.Text, workingList);
             filesGrid.Items.Refresh();
         }
 
@@ -188,7 +188,7 @@ namespace MusicSink
             mediaStop();
             workingList.Clear();
             filesGrid.Items.Refresh();  // Can't make the grid appear blank while loading yet....
-            MusicFolder.scanMusicFolder(removableDriveCombo.Text, workingList);
+            lblMessage.Text = MusicFolder.scanMusicFolder(removableDriveCombo.Text, workingList);
             filesGrid.Items.Refresh();
         }
 
