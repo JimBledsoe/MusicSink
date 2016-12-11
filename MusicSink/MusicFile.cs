@@ -109,8 +109,8 @@ namespace MusicSink
             return (manifestMasterMusic.musicFiles.Count + " files in library, " + 
                     scannedMasterMusic.musicFiles.Count + " files scanned, " + 
                     addedCount + " files added, " + 
-                    deletedCount + " files deleted" +
-                    workingFiles.Count + " files to process");
+                    deletedCount + " files deleted, " +
+                    workingFiles.Count + " files to process.");
         }
     }
 
