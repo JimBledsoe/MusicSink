@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Media;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -33,6 +32,7 @@ namespace MusicSink
         //    get { return mediaPlayer.Source.ToString(); }
         //    set { mediaPlayer.Source = new Uri(value); }
         //}
+        private BackgroundWorker asyncScanner = new BackgroundWorker();
 
         public MainWindow()
         {
@@ -47,6 +47,9 @@ namespace MusicSink
             CollectionViewSource itemCollectionViewSource;
             itemCollectionViewSource = (CollectionViewSource)(FindResource("ItemCollectionViewSource"));
             itemCollectionViewSource.Source = workingList;
+
+            // setup background worker for scanning
+            asyncScanner_Initialize();
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -84,11 +87,7 @@ namespace MusicSink
 
         private void remoteMasterScanButton_Click(object sender, RoutedEventArgs e)
         {
-            mediaStop();
-            workingList.Clear();
-            filesGrid.Items.Refresh();  // Can't make the grid appear blank while loading yet....
-            lblMessage.Text = MusicFolder.scanMusicFolder(remoteMasterPath.Text, workingList);
-            filesGrid.Items.Refresh();
+            launchBackgroundFolderScan(remoteMasterPath.Text);
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -130,11 +129,7 @@ namespace MusicSink
 
         private void localMasterScanButton_Click(object sender, RoutedEventArgs e)
         {
-            mediaStop();
-            workingList.Clear();
-            filesGrid.Items.Refresh();  // Can't make the grid appear blank while loading yet....
-            lblMessage.Text = MusicFolder.scanMusicFolder(localMasterPath.Text, workingList);
-            filesGrid.Items.Refresh();
+            launchBackgroundFolderScan(localMasterPath.Text);
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -185,11 +180,7 @@ namespace MusicSink
 
         private void removableScanButton_Click(object sender, RoutedEventArgs e)
         {
-            mediaStop();
-            workingList.Clear();
-            filesGrid.Items.Refresh();  // Can't make the grid appear blank while loading yet....
-            lblMessage.Text = MusicFolder.scanMusicFolder(removableDriveCombo.Text, workingList);
-            filesGrid.Items.Refresh();
+            launchBackgroundFolderScan(removableDriveCombo.Text);
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -200,6 +191,7 @@ namespace MusicSink
             mediaStop();
             workingList.Clear();
             filesGrid.Items.Refresh();
+            lblMessage.Text = "Idle....";
         }
 
         static private ToggleButton lastPlayButton = null;
@@ -233,10 +225,12 @@ namespace MusicSink
             }
         }
 
+        // TODO
         private void onRowCopy(object sender, RoutedEventArgs e)
         {
         }
 
+        // TODO
         private void onRowHide(object sender, RoutedEventArgs e)
         {
             for (var vis = sender as Visual; vis != null; vis = VisualTreeHelper.GetParent(vis) as Visual)
@@ -249,6 +243,71 @@ namespace MusicSink
                     break;
                 }
             }
+        }
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Background scanner processing Methods
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+        private void asyncScanner_Initialize()
+        {
+            asyncScanner.WorkerReportsProgress = true;
+            asyncScanner.WorkerSupportsCancellation = true;
+            asyncScanner.DoWork += new DoWorkEventHandler(asyncScanner_DoWork);
+            asyncScanner.ProgressChanged += new ProgressChangedEventHandler(asyncScanner_ProgressChanged);
+            asyncScanner.RunWorkerCompleted += new RunWorkerCompletedEventHandler(asyncScanner_RunWorkerCompleted);
+        }
+
+        private void launchBackgroundFolderScan(string path)
+        {
+            if (asyncScanner.IsBusy == false)
+            {
+                mediaStop();
+                workingList.Clear();
+                filesGrid.Items.Refresh();
+                lblMessage.Text = "Scanning launched in background....";
+                asyncScanner.RunWorkerAsync(path);
+            }
+            else
+            {
+                lblMessage.Text = "Scanning already in progress....";
+            }
+        }
+
+        private void asyncScanner_DoWork(object sender, DoWorkEventArgs e)
+        {
+            BackgroundWorker worker = sender as BackgroundWorker;
+
+            e.Result = MusicFolder.scanMusicFolder((string)e.Argument, workingList, worker);
+        }
+
+        private void asyncScanner_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if ((e.Cancelled == true))
+            {
+                this.lblMessage.Text = "Canceled!";
+            }
+
+            else if (!(e.Error == null))
+            {
+                this.lblMessage.Text = ("Error: " + e.Error.Message);
+            }
+
+            else
+            {
+                this.lblMessage.Text = e.Result.ToString();
+            }
+
+            filesGrid.Items.Refresh();
+            this.progressBar.Value = 0;
+        }
+
+        private void asyncScanner_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            if (e.ProgressPercentage >= 0)  // Allow us to call this without changing the progress bar
+            {
+                this.progressBar.Value = e.ProgressPercentage;
+            }
+            this.lblMessage.Text = e.UserState.ToString();
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////

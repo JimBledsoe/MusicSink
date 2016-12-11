@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -52,16 +53,16 @@ namespace MusicSink
         }
 
         // Read all of the files under a path into a list of MusicFolder class
-        static public MusicFolder EnumerateMusicFolder(string sDir)
+        static public MusicFolder EnumerateMusicFolder(string sDir, BackgroundWorker worker)
         {
             List<MusicFile> musicFiles = null;
-            musicFiles = EnumerateFilesInPath(sDir, musicFiles);
+            musicFiles = EnumerateFilesInPath(sDir, musicFiles, worker);
             MusicFolder musicFolder = new MusicFolder(sDir, musicFiles);
             return (musicFolder);
         }
 
         // Read all of the files under a path into a list of MusicFile class
-        static private List<MusicFile> EnumerateFilesInPath(string sDir, List<MusicFile> musicFiles)
+        static private List<MusicFile> EnumerateFilesInPath(string sDir, List<MusicFile> musicFiles, BackgroundWorker worker)
         {
             List<MusicFile> outFiles = new List<MusicFile>();
             if (musicFiles != null)
@@ -82,13 +83,14 @@ namespace MusicSink
                     {
                         MusicFile mf = new MusicFile(f);
                         outFiles.Add(mf);
-                        Console.WriteLine(f);
+                        //Console.WriteLine(f);
+                        worker.ReportProgress(-1, "Read " + f);
                     }
                 }
                 // Recurse into the subdirs in this folder
                 foreach (string d in Directory.GetDirectories(sDir))
                 {
-                    outFiles = EnumerateFilesInPath(d, outFiles);
+                    outFiles = EnumerateFilesInPath(d, outFiles, worker);
                 }
             }
             catch

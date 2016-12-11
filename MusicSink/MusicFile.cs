@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -20,20 +21,25 @@ namespace MusicSink
         }
 
         // Begin the scan process widgets
-        static public string scanMusicFolder(string folderName, List<MusicFile> workingFiles)
+        static public string scanMusicFolder(string folderName, List<MusicFile> workingFiles, BackgroundWorker worker)
         {
             int addedCount = 0;
             int deletedCount = 0;
             FileInfo masterManifest = new FileInfo(Path.GetFullPath(folderName) + "\\" + Constants.ManifestFilename);
             MusicFolder scannedMasterMusic = null;
             MusicFolder manifestMasterMusic = null;
+            int percentComplete = 0;
 
             // Scan the master folder and build a fresh list
             Console.WriteLine("Scan the folder for music files....");
-            scannedMasterMusic = FileUtils.EnumerateMusicFolder(folderName);
+            percentComplete = 20;
+            worker.ReportProgress(percentComplete, "Scan the folder for music files....");
+            scannedMasterMusic = FileUtils.EnumerateMusicFolder(folderName, worker);
 
             // If we have a previous manifest on the master folder, read it in
             Console.WriteLine("Look for a manifest file in the folder....");
+            percentComplete = 40;
+            worker.ReportProgress(percentComplete, "Look for a manifest file in the folder....");
             if (masterManifest.Exists)
             {
                 string json = File.ReadAllText(masterManifest.FullName);
@@ -60,10 +66,13 @@ namespace MusicSink
 
             // Go through all the recently scanned files to see if any are not in the disk list (new files)
             Console.WriteLine("Chew through all the files we just scanned....");
+            percentComplete = 60;
+            worker.ReportProgress(percentComplete, "Chew through all the files we just scanned....");
             foreach (MusicFile currentFile in scannedMasterMusic.musicFiles)
             {
                 MusicFile searchFile = null;
-                    
+                worker.ReportProgress(percentComplete, "Process " + currentFile.fileName);
+
                 if (manifestMasterMusic.musicFiles != null)
                 {
                     searchFile = manifestMasterMusic.musicFiles.Find(srch => srch.fileName == currentFile.fileName);
@@ -87,12 +96,15 @@ namespace MusicSink
                 }
             }
 
-            Console.WriteLine("Now walk all the manifest files looking for deleted ones....");
             // Now go through the disk list and mark any unprocessed as deleted from the master
+            Console.WriteLine("Now walk all the manifest files looking for deleted ones....");
+            percentComplete = 80;
+            worker.ReportProgress(percentComplete, "Now walk all the manifest files looking for deleted ones....");
             if (manifestMasterMusic.musicFiles != null)
             {
                 foreach (MusicFile currentFile in manifestMasterMusic.musicFiles)
                 {
+                    worker.ReportProgress(percentComplete, "Scrub " + currentFile.fileName);
                     if (currentFile.isProcessed == false)
                     {
                         currentFile.isProcessed = true;
@@ -106,6 +118,8 @@ namespace MusicSink
             }
 
             Console.WriteLine("Scanning process is complete....");
+            percentComplete = 100;
+            worker.ReportProgress(percentComplete, "Scanning process is complete....");
             return (manifestMasterMusic.musicFiles.Count + " files in library, " + 
                     scannedMasterMusic.musicFiles.Count + " files scanned, " + 
                     addedCount + " files added, " + 
