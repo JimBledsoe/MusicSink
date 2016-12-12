@@ -20,16 +20,49 @@
         <Label x:Name="remoteMasterLabel" Content="Remote Master" HorizontalAlignment="Left" VerticalAlignment="Top" Height="23"/>
         <TextBox x:Name="remoteMasterPath" HorizontalAlignment="Stretch" Height="23" Width="auto" Margin="110,0,170,0" TextWrapping="Wrap" Loaded="remoteMasterPath_Loaded" Text="{Binding Source={StaticResource Settings}, Path=Default.RemoteMasterPath}" LostFocus="remoteMasterPath_Changed" KeyDown="remoteMasterPath_KeyDown" VerticalAlignment="Top"/>
         <Button x:Name="remoteMasterBrowseButton" Content="Browse" HorizontalAlignment="Right" Margin="0,2,85,0" VerticalAlignment="Top" Width="75" Click="remoteMasterBrowseButton_Click" Height="19"/>
-        <Button x:Name="remoteMasterScanButton" Content="Scan" HorizontalAlignment="Right" Margin="0,2,0,0" VerticalAlignment="Top" Width="75" Click="remoteMasterScanButton_Click" Height="19" IsEnabled="False"/>
+        <ToggleButton Name="remoteMasterScanButton" HorizontalAlignment="Right" Margin="0,2,0,0" VerticalAlignment="Top" Width="75" Click="remoteMasterScanButton_Click" Height="19" IsEnabled="False">
+            <ToggleButton.Style>
+                <Style TargetType="{x:Type ToggleButton}">
+                    <Setter Property="Content" Value="Scan"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter Property="Content" Value="Cancel"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </ToggleButton.Style>
+        </ToggleButton>
 
         <Label x:Name="localMasterLabel" Content="Local Master" HorizontalAlignment="Left" Margin="0,28,0,0" VerticalAlignment="Top" Height="23"/>
         <TextBox x:Name="localMasterPath" HorizontalAlignment="Stretch" Height="23" Width="auto" Margin="110,28,170,0" TextWrapping="Wrap" Loaded="localMasterPath_Loaded" Text="{Binding Source={StaticResource Settings}, Path=Default.LocalMasterPath}" LostFocus="localMasterPath_Changed" KeyDown="localMasterPath_KeyDown" VerticalAlignment="Top"/>
         <Button x:Name="localMasterBrowseButton" Content="Browse" HorizontalAlignment="Right" Margin="0,31,85,0" VerticalAlignment="Top" Width="75" Click="localMasterBrowseButton_Click" Height="19"/>
-        <Button x:Name="localMasterScanButton" Content="Scan" HorizontalAlignment="Right" Margin="0,31,0,0" VerticalAlignment="Top" Width="75" Click="localMasterScanButton_Click" Height="19" IsEnabled="False"/>
+        <ToggleButton Name="localMasterScanButton" HorizontalAlignment="Right" Margin="0,31,0,0" VerticalAlignment="Top" Width="75" Click="localMasterScanButton_Click" Height="19" IsEnabled="False">
+            <ToggleButton.Style>
+                <Style TargetType="{x:Type ToggleButton}">
+                    <Setter Property="Content" Value="Scan"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter Property="Content" Value="Cancel"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </ToggleButton.Style>
+        </ToggleButton>
 
         <Label x:Name="removableLabel" Content="Removable Media" HorizontalAlignment="Left" Margin="0,56,0,0" VerticalAlignment="Top" Height="23"/>
         <ComboBox x:Name="removableDriveCombo" ItemsSource="{Binding removableList}" HorizontalAlignment="Stretch"  Width="auto" Margin="110,56,170,0" VerticalAlignment="Top" Loaded="removableDriveCombo_Loaded" SelectionChanged="removableDriveCombo_SelectionChanged"/>
-        <Button x:Name="removableScanButton" Content="Scan" HorizontalAlignment="Right" Margin="0,60,0,0" VerticalAlignment="Top" Width="75" Click="removableScanButton_Click" Height="19" IsEnabled="False"/>
+        <ToggleButton Name="removableScanButton" HorizontalAlignment="Right" Margin="0,60,0,0" VerticalAlignment="Top" Width="75" Click="removableScanButton_Click" Height="19" IsEnabled="False">
+            <ToggleButton.Style>
+                <Style TargetType="{x:Type ToggleButton}">
+                    <Setter Property="Content" Value="Scan"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter Property="Content" Value="Cancel"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </ToggleButton.Style>
+        </ToggleButton>
 
         <Button x:Name="clearGridButton" Content="Clear the working list" HorizontalAlignment="Right" Margin="0,117,0,0" VerticalAlignment="Top" Width="165" Height="19" Click="filesClearButton_Click"/>
         <Label x:Name="filesGridLabel" Content="New music files requiring a decision" HorizontalAlignment="Left" Margin="0,112,0,0" VerticalAlignment="Top" Height="29"/>
@@ -89,7 +122,7 @@
             <StatusBarItem HorizontalAlignment="Stretch" Width="Auto">
                 <TextBlock Name="lblMessage" Text="Set your paths and scan folders."/>
             </StatusBarItem>
-            <StatusBarItem HorizontalAlignment="Right" Width="Auto">
+            <StatusBarItem HorizontalAlignment="Right" Width="100">
                 <ProgressBar Name="progressBar" Height="10" Width="100"/>
             </StatusBarItem>
         </StatusBar>

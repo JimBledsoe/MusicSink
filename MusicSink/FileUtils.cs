@@ -53,16 +53,16 @@ namespace MusicSink
         }
 
         // Read all of the files under a path into a list of MusicFolder class
-        static public MusicFolder EnumerateMusicFolder(string sDir, BackgroundWorker worker)
+        static public MusicFolder EnumerateMusicFolder(string sDir, BackgroundWorker worker, DoWorkEventArgs e, Func<BackgroundWorker, DoWorkEventArgs, bool> checkForCancel)
         {
             List<MusicFile> musicFiles = null;
-            musicFiles = EnumerateFilesInPath(sDir, musicFiles, worker);
+            musicFiles = EnumerateFilesInPath(sDir, musicFiles, worker, e, checkForCancel);
             MusicFolder musicFolder = new MusicFolder(sDir, musicFiles);
             return (musicFolder);
         }
 
         // Read all of the files under a path into a list of MusicFile class
-        static private List<MusicFile> EnumerateFilesInPath(string sDir, List<MusicFile> musicFiles, BackgroundWorker worker)
+        static private List<MusicFile> EnumerateFilesInPath(string sDir, List<MusicFile> musicFiles, BackgroundWorker worker, DoWorkEventArgs e, Func<BackgroundWorker, DoWorkEventArgs, bool>checkForCancel)
         {
             List<MusicFile> outFiles = new List<MusicFile>();
             if (musicFiles != null)
@@ -85,12 +85,13 @@ namespace MusicSink
                         outFiles.Add(mf);
                         //Console.WriteLine(f);
                         worker.ReportProgress(-1, "Read " + f);
+                        if (checkForCancel(worker, e)) return null;
                     }
                 }
                 // Recurse into the subdirs in this folder
                 foreach (string d in Directory.GetDirectories(sDir))
                 {
-                    outFiles = EnumerateFilesInPath(d, outFiles, worker);
+                    outFiles = EnumerateFilesInPath(d, outFiles, worker, e, checkForCancel);
                 }
             }
             catch

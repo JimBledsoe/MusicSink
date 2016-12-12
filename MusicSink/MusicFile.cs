@@ -21,7 +21,7 @@ namespace MusicSink
         }
 
         // Begin the scan process widgets
-        static public string scanMusicFolder(string folderName, List<MusicFile> workingFiles, BackgroundWorker worker)
+        static public string scanMusicFolder(string folderName, List<MusicFile> workingFiles, BackgroundWorker worker, DoWorkEventArgs e)
         {
             int addedCount = 0;
             int deletedCount = 0;
@@ -34,12 +34,13 @@ namespace MusicSink
             Console.WriteLine("Scan the folder for music files....");
             percentComplete = 20;
             worker.ReportProgress(percentComplete, "Scan the folder for music files....");
-            scannedMasterMusic = FileUtils.EnumerateMusicFolder(folderName, worker);
+            scannedMasterMusic = FileUtils.EnumerateMusicFolder(folderName, worker, e, checkForCancel);
 
             // If we have a previous manifest on the master folder, read it in
             Console.WriteLine("Look for a manifest file in the folder....");
             percentComplete = 40;
             worker.ReportProgress(percentComplete, "Look for a manifest file in the folder....");
+            if (checkForCancel(worker, e)) return "Cancelled.";
             if (masterManifest.Exists)
             {
                 string json = File.ReadAllText(masterManifest.FullName);
@@ -72,6 +73,7 @@ namespace MusicSink
             {
                 MusicFile searchFile = null;
                 worker.ReportProgress(percentComplete, "Process " + currentFile.fileName);
+                if (checkForCancel(worker, e)) return "Cancelled.";
 
                 if (manifestMasterMusic.musicFiles != null)
                 {
@@ -105,6 +107,7 @@ namespace MusicSink
                 foreach (MusicFile currentFile in manifestMasterMusic.musicFiles)
                 {
                     worker.ReportProgress(percentComplete, "Scrub " + currentFile.fileName);
+                    if (checkForCancel(worker, e)) return "Cancelled.";
                     if (currentFile.isProcessed == false)
                     {
                         currentFile.isProcessed = true;
@@ -125,6 +128,15 @@ namespace MusicSink
                     addedCount + " files added, " + 
                     deletedCount + " files deleted, " +
                     workingFiles.Count + " files to process.");
+        }
+
+        static private bool checkForCancel(BackgroundWorker worker, DoWorkEventArgs e)
+        {
+            if (worker.CancellationPending)
+            {
+                e.Cancel = true;
+            }
+            return e.Cancel;
         }
     }
 

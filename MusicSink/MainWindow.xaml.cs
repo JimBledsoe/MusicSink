@@ -87,7 +87,7 @@ namespace MusicSink
 
         private void remoteMasterScanButton_Click(object sender, RoutedEventArgs e)
         {
-            launchBackgroundFolderScan(remoteMasterPath.Text);
+            launchBackgroundFolderScan(remoteMasterPath.Text, sender);
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -129,7 +129,7 @@ namespace MusicSink
 
         private void localMasterScanButton_Click(object sender, RoutedEventArgs e)
         {
-            launchBackgroundFolderScan(localMasterPath.Text);
+            launchBackgroundFolderScan(localMasterPath.Text, sender);
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -180,7 +180,7 @@ namespace MusicSink
 
         private void removableScanButton_Click(object sender, RoutedEventArgs e)
         {
-            launchBackgroundFolderScan(removableDriveCombo.Text);
+            launchBackgroundFolderScan(removableDriveCombo.Text, sender);
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -257,19 +257,26 @@ namespace MusicSink
             asyncScanner.RunWorkerCompleted += new RunWorkerCompletedEventHandler(asyncScanner_RunWorkerCompleted);
         }
 
-        private void launchBackgroundFolderScan(string path)
+        private void launchBackgroundFolderScan(string path, object sender)
         {
-            if (asyncScanner.IsBusy == false)
+            if (asyncScanner.IsBusy == true)
+            {
+                asyncScanner.CancelAsync();
+                lblMessage.Text = "Scanning cancelled.";
+            }
+            else
             {
                 mediaStop();
                 workingList.Clear();
                 filesGrid.Items.Refresh();
                 lblMessage.Text = "Scanning launched in background....";
                 asyncScanner.RunWorkerAsync(path);
-            }
-            else
-            {
-                lblMessage.Text = "Scanning already in progress....";
+
+                disableButtonsWhileBusy(true);
+                // Disable the scan buttons that we did not click (is currently checked)
+                remoteMasterScanButton.IsEnabled = (remoteMasterScanButton.IsChecked == true);
+                localMasterScanButton.IsEnabled = (localMasterScanButton.IsChecked == true);
+                removableScanButton.IsEnabled = (removableScanButton.IsChecked == true);
             }
         }
 
@@ -277,37 +284,58 @@ namespace MusicSink
         {
             BackgroundWorker worker = sender as BackgroundWorker;
 
-            e.Result = MusicFolder.scanMusicFolder((string)e.Argument, workingList, worker);
+            e.Result = MusicFolder.scanMusicFolder((string)e.Argument, workingList, worker, e);
         }
 
         private void asyncScanner_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             if ((e.Cancelled == true))
             {
-                this.lblMessage.Text = "Canceled!";
+                lblMessage.Text = "Canceled!";
             }
 
             else if (!(e.Error == null))
             {
-                this.lblMessage.Text = ("Error: " + e.Error.Message);
+                lblMessage.Text = ("Error: " + e.Error.Message);
             }
 
             else
             {
-                this.lblMessage.Text = e.Result.ToString();
+                lblMessage.Text = e.Result.ToString();
             }
 
+            disableButtonsWhileBusy(false);
+            remoteMasterScanButton.IsChecked = false;
+            localMasterScanButton.IsChecked = false;
+            removableScanButton.IsChecked = false;
+
             filesGrid.Items.Refresh();
-            this.progressBar.Value = 0;
+            progressBar.Value = 0;
         }
 
         private void asyncScanner_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             if (e.ProgressPercentage >= 0)  // Allow us to call this without changing the progress bar
             {
-                this.progressBar.Value = e.ProgressPercentage;
+                progressBar.Value = e.ProgressPercentage;
             }
-            this.lblMessage.Text = e.UserState.ToString();
+            lblMessage.Text = e.UserState.ToString();
+        }
+
+        private void disableButtonsWhileBusy(bool disabled)
+        {
+            remoteMasterPath.IsEnabled = !disabled;
+            localMasterPath.IsEnabled = !disabled;
+            removableDriveCombo.IsEnabled = !disabled;
+
+            remoteMasterBrowseButton.IsEnabled = !disabled;
+            localMasterBrowseButton.IsEnabled = !disabled;
+
+            remoteMasterScanButton.IsEnabled = !disabled;
+            localMasterScanButton.IsEnabled = !disabled;
+            removableScanButton.IsEnabled = !disabled && FileUtils.validatePathCombobox(removableDriveCombo);
+
+            clearGridButton.IsEnabled = !disabled;
         }
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////
