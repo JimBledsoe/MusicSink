@@ -39,9 +39,11 @@ namespace MusicSink
         {
             try
             {
-                if (cb.SelectedItem.ToString().Length > 0)
+                string path = cb.SelectedItem.ToString();
+                path = path.Substring(0, path.IndexOf(" "));
+                if (path.Length > 0)
                 {
-                    DirectoryInfo dir = new DirectoryInfo(Path.GetFullPath(cb.SelectedItem.ToString()));
+                    DirectoryInfo dir = new DirectoryInfo(Path.GetFullPath(path));
                     return (dir.Exists);
                 }
             }

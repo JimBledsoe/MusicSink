@@ -49,7 +49,7 @@ namespace MusicSink
             else
             {
                 manifestMasterMusic = new MusicFolder(folderName, null);
-                string json = Newtonsoft.Json.JsonConvert.SerializeObject(scannedMasterMusic);
+                string json = Newtonsoft.Json.JsonConvert.SerializeObject(scannedMasterMusic, Newtonsoft.Json.Formatting.Indented);
                 try
                 {
                     File.WriteAllText(masterManifest.FullName, json);
@@ -173,7 +173,7 @@ namespace MusicSink
                         fileName = fi.FullName;
                         timeStamp = fi.LastWriteTime;
                         size = fi.Length;
-                        md5 = null; // calculateFileMD5(fileName);
+                        md5 = null;  // do in a separate pass calculateFileMD5(fileName);
                         status = MusicFileStatus.Unknown;
                     }
                 }

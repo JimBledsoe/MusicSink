@@ -137,7 +137,8 @@ namespace MusicSink
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////
         private void enumerateRemovableDriveCombo()
         {
-            removableList = DriveInfo.GetDrives().Where(d => d.DriveType == DriveType.Removable).Select(s => s.ToString()).ToList();
+            const float cGB = 1024 * 1024 * 1024;
+            removableList = DriveInfo.GetDrives().Where(d => d.DriveType == DriveType.Removable).Select(s => String.Format("{0}  ({1}) {2:N1} GB free of {3:N1} GB Total", s.ToString(), s.VolumeLabel, s.AvailableFreeSpace/cGB, s.TotalSize/cGB)).ToList();
             removableList.Insert(0, "<No removable media drive selected>");
             removableDriveCombo.ItemsSource = removableList;
             removableDriveCombo.SelectedIndex = (removableList.Count > 1) ? 1 : 0;  // Select first valid drive (skip bogus first entry)
