@@ -72,12 +72,12 @@ namespace MusicSink
             foreach (MusicFile currentFile in scannedMasterMusic.musicFiles)
             {
                 MusicFile searchFile = null;
-                worker.ReportProgress(percentComplete, "Process " + currentFile.fileName);
+                worker.ReportProgress(percentComplete, "Process " + currentFile.FileName);
                 if (checkForCancel(worker, e)) return "Cancelled.";
 
                 if (manifestMasterMusic.musicFiles != null)
                 {
-                    searchFile = manifestMasterMusic.musicFiles.Find(srch => srch.fileName == currentFile.fileName);
+                    searchFile = manifestMasterMusic.musicFiles.Find(srch => srch.FileName == currentFile.FileName);
                 }
                 currentFile.isProcessed = true;
 
@@ -90,7 +90,7 @@ namespace MusicSink
                 }
                 else  // Not in the disk manifest means a new file, add to our working list
                 {
-                    MusicFile newFile = new MusicFile(currentFile.fileName);
+                    MusicFile newFile = new MusicFile(currentFile.FileName);
                     currentFile.status = MusicFile.MusicFileStatus.New;
                     newFile.status = MusicFile.MusicFileStatus.New;
                     addedCount++;
@@ -106,12 +106,12 @@ namespace MusicSink
             {
                 foreach (MusicFile currentFile in manifestMasterMusic.musicFiles)
                 {
-                    worker.ReportProgress(percentComplete, "Scrub " + currentFile.fileName);
+                    worker.ReportProgress(percentComplete, "Scrub " + currentFile.FileName);
                     if (checkForCancel(worker, e)) return "Cancelled.";
                     if (currentFile.isProcessed == false)
                     {
                         currentFile.isProcessed = true;
-                        MusicFile newFile = new MusicFile(currentFile.fileName);
+                        MusicFile newFile = new MusicFile(currentFile.FileName);
                         currentFile.status = MusicFile.MusicFileStatus.Deleted;
                         newFile.status = MusicFile.MusicFileStatus.Deleted;
                         deletedCount++;
@@ -142,20 +142,25 @@ namespace MusicSink
 
     public class MusicFile
     {
-        public string fileName { get; set; }
+        public string FileName { get; set; }
         public DateTime timeStamp;
         public long size;
         public string md5;
         public bool isProcessed;
         public bool isIgnored;
         public MusicFileStatus status { get; set; }
+        public string Id3Title { get; set; }
+        public string Id3Album { get; set; }
+        public string Id3Artist { get; set; }
+        public string Id3Genre { get; set; }
+        public string id3Length;
 
         public enum MusicFileStatus { Unknown, New, Old, Deleted, Hidden }
 
         // Constructor from a raw filename
         public MusicFile(string fname)
         {
-            fileName = "";
+            FileName = "";
             // timeStamp = ??? what to initialize to;
             size = -1;
             md5 = null;
@@ -170,17 +175,27 @@ namespace MusicSink
                     FileInfo fi = new FileInfo(fname);
                     if (fi.Exists)
                     {
-                        fileName = fi.FullName;
+                        FileName = fi.FullName;
                         timeStamp = fi.LastWriteTime;
                         size = fi.Length;
                         md5 = null;  // do in a separate pass calculateFileMD5(fileName);
                         status = MusicFileStatus.Unknown;
+                        readID3Tags(fi.FullName);
                     }
                 }
                 catch
                 {
                 }
             }
+        }
+
+        private void readID3Tags(string filename)
+        {
+            TagLib.File file = TagLib.File.Create(filename);
+            Id3Title = file.Tag.Title;
+            Id3Album = file.Tag.Album;
+            Id3Artist = file.Tag.JoinedAlbumArtists;
+            id3Length = file.Properties.Duration.ToString();
         }
 
         // Calculate the MD5 checksum of a file

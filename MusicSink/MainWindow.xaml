@@ -110,7 +110,8 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTextColumn Header="Status" Binding="{Binding status}" Width="70"/>
-                <DataGridTextColumn Header="Filename" Binding="{Binding fileName}" Width="*"/>
+                <DataGridTextColumn Header="Album" Binding="{Binding Id3Album}" Width="150"/>
+                <DataGridTextColumn Header="Filename" Binding="{Binding FileName}" Width="*"/>
             </DataGrid.Columns>
         </DataGrid>
 

@@ -201,11 +201,11 @@ namespace MusicSink
             MusicFile selectedFile = (MusicFile)filesGrid.SelectedItem;
             bool currentIsChecked = ((sender as ToggleButton).IsChecked == true);
 
-            Uri newMusic = new Uri(selectedFile.fileName);
+            Uri newMusic = new Uri(selectedFile.FileName);
             // If we have clicked on a new row, then load up the file
             if (newMusic != mediaPlayer.Source)
             {
-                mediaPlayer.Source = new Uri(selectedFile.fileName);
+                mediaPlayer.Source = new Uri(selectedFile.FileName);
                 // uncheck the last row that was checked (radio style toggles)
                 if (lastPlayButton != null)
                 {
